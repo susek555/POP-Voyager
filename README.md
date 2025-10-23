@@ -22,6 +22,23 @@ Zaprojektuj eksperyment, w którym wykorzystasz algorytmy heurystyczne w celu zn
 
 ### Model
 
-- Biblioteka networkx i klasa Graph (plik example_graph.py)
+- Graf: Biblioteka networkx i klasa Graph (plik example_graph.py)
 
+<br>
+<br>
+<br>
+
+Problem:
 https://home.ttic.edu/~avrim/Papers/orienteering-sicomp.pdf?utm_source=chatgpt.com
+https://pl.wikipedia.org/wiki/Problem_marszrutyzacji
+
+<br>
+
+Heurystyki:
+https://pl.wikipedia.org/wiki/Algorytm_najbliższego_sąsiada
+https://pl.wikipedia.org/wiki/Algorytm_Christofidesa (?)
+
+<br>
+
+Nie heurystyka ale może też reiforced learning można użyć
+https://csc.csudh.edu/btang/papers/pctsp.pdf
