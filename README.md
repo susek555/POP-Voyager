@@ -23,6 +23,7 @@ Zaprojektuj eksperyment, w którym wykorzystasz algorytmy heurystyczne w celu zn
 ### Model
 
 - Graf: Biblioteka networkx i klasa Graph (plik example_graph.py)
+  - nie wiem czy nie lepiej byłoby obliczać koszty przemieszczenia za każdym razem ze współrzędnych bo wzrost krawędzi w grafie to \(n!\)
 
 <br>
 <br>
@@ -36,6 +37,12 @@ https://pl.wikipedia.org/wiki/Problem_marszrutyzacji
 
 Heurystyki:
 https://pl.wikipedia.org/wiki/Algorytm_najbliższego_sąsiada
+https://pl.wikipedia.org/wiki/Algorytm_genetyczny
+https://pl.wikipedia.org/wiki/Algorytm_mrówkowy
+https://pl.wikipedia.org/wiki/Symulowane_wyżarzanie
+Algorytm zachłanny / zachłanne poprawianie istniejącej
+2-opt / 3-opt
+
 https://pl.wikipedia.org/wiki/Algorytm_Christofidesa (?)
 
 <br>
