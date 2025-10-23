@@ -20,4 +20,8 @@ Zaprojektuj eksperyment, w którym wykorzystasz algorytmy heurystyczne w celu zn
 - Dana maksymalna liczba wierzchołków możliwych do odwiedzenia \(n\).
 - Początek i koniec w wierzchołku \(P\) (n + 1 przebytych krawędzi)
 
+### Model
+
+- Biblioteka networkx i klasa Graph (plik example_graph.py)
+
 https://home.ttic.edu/~avrim/Papers/orienteering-sicomp.pdf?utm_source=chatgpt.com
