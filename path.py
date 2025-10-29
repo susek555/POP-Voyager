@@ -13,7 +13,7 @@ class Path:
         return self
 
     def __add__(self, new_node: str):
-        return Path(self.path.append(new_node))
+        return Path(self.path + [new_node])
 
 
 
