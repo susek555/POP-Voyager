@@ -3,6 +3,7 @@ import draw_graph
 import generate_graph
 from target_function import target_function
 from path import Path
+import heuristics
 
 # Tworzymy graf
 G = generate_graph.generate_graph(
@@ -12,7 +13,8 @@ G = generate_graph.generate_graph(
     cost_factor=0.2
 )
 
-path = Path(['P', 's1', 's2', 's3', 'P'])
+# path = Path(['P', 's1', 's2', 's3', 'P'])
+path = heuristics.full_random(G, 6)
 print(target_function(G, path.path))
 
 
