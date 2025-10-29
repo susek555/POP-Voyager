@@ -2,9 +2,10 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from typing import Optional
-def draw_graph(graph: nx.Graph, title: str, path: Optional[list[str]] = []) -> None:
-    if path is None:
-        path = []
+from path import Path
+
+def draw_graph(graph: nx.Graph, title: str, path: Optional[Path] = Path()) -> None:
+
     # Get 3D positions
     pos = nx.get_node_attributes(graph, "pos")
 

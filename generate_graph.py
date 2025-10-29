@@ -1,7 +1,7 @@
 import networkx as nx
 import random
 
-def generate_graph(\
+def generate_graph(
         number_of_nodes: int,
         max_base_distance: float = 10.0,
         reward_range: tuple[int, int] = (5, 20),
