@@ -12,10 +12,11 @@ G = generate_graph.generate_graph(
 )
 
 # path = Path(['P', 's1', 's2', 's3', 'P'])
-path = heuristics.full_random(G, 6)
-print(f"Random: {objective_function(G, path)}")
-path = heuristics.greedy(G, 6)
-print(f"Greedy: {objective_function(G, path)}")
+# path = heuristics.full_random(G, 6)
+# print(f"Random: {objective_function(G, path)}")
+# path = heuristics.greedy(G, 6)
+# print(f"Greedy: {objective_function(G, path)}")
+path = heuristics.SA(G, objective_function, 6, 100)
 
 
-draw_graph.draw_graph(G, "Example 3D Graph", path)
+# draw_graph.draw_graph(G, "Example 3D Graph", path)

@@ -4,7 +4,7 @@ from path import Path
 
 def objective_function(graph: nx.Graph, path: Path) -> float:
     rewards = sum(
-        data["reward"] for (node, data) in graph.nodes(data=True) if node in path
+        graph.nodes[node]["reward"] for node in set(path) if node in graph.nodes
     )
     costs = sum(graph[u][v]["cost"] for u, v in zip(path[:-1], path[1:]))
     return rewards / costs
