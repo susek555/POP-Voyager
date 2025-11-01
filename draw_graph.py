@@ -39,12 +39,22 @@ def draw_graph(graph: nx.Graph, title: str, path: Optional[Path] = Path()) -> No
 
     # Nodes
     for node, (x, y, z) in pos.items():
-        ax.scatter(
-            x, y, z, s=200, label=node, color=("green" if node == "P" else "orange")
-        )
         reward = graph.nodes[node]["reward"]
-        ax.text(x, y, z, f"{node}\n", color="green", fontsize=9, ha="center")
-        ax.text(x, y, z - 12, f"\n{reward}", color="green", fontsize=9, ha="center")
+        size = 100
+
+        ax.scatter(
+            x, y, z, s=size, label=node, color=("green" if node == "P" else "orange")
+        )
+
+        offset = 0.05  # procent osi Z
+
+        zmin, zmax = ax.get_zlim()
+        scale = (zmax - zmin) * offset
+
+        ax.text(x, y, z + scale, f"{node}", color="green", fontsize=9, ha="center")
+        ax.text(
+            x, y, z - 3 * scale, f"{reward}", color="green", fontsize=9, ha="center"
+        )
 
     # Clear background
     ax.set_facecolor("none")

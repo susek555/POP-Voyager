@@ -39,7 +39,6 @@ def greedy(graph: nx.Graph, max_nodes: int) -> Path:
         next_node = max(ratios, key=ratios.get)
         path += next_node
         visited.append(next_node)
-        # nodes_data[next_node]["reward"] = 0
         current_node = next_node
 
     return path + "P"
