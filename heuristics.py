@@ -3,6 +3,7 @@ from path import Path
 import random
 from typing import Callable
 import heuristics_utils
+import math
 
 
 def full_random(graph: nx.Graph, max_nodes: int) -> Path:
@@ -42,15 +43,31 @@ def SA(
     params: heuristics_utils.SAparams,
 ) -> Path:
     nodes_data = list(graph.nodes(data=True))
-    edges_data = list(graph.edges(data=True))
+    # edges_data = list(graph.edges(data=True))
     best_path = heuristics_utils.get_random_path(nodes_data, max_nodes)
     best_eval = objective_function(graph, best_path)
     current_path, current_eval = best_path, best_eval
     scores = [best_eval]
 
-    print(best_path)
-    print(heuristics_utils.replace_one_node(nodes_data, best_path))
+    for i in range(params.n_iter):
+        # temp = params.start_temp * (params.n_iter - i + 1) / params.n_iter
+        temp = params.start_temp * (params.decrease_factor**i)
+        # temp = params.start_temp / math.log(1 + i)
 
-    # for i in range(params.n_iter):
+        candidate_path = heuristics_utils.replace_one_node(nodes_data, current_path)
+        candidate_eval = objective_function(graph, candidate_path)
 
-    raise (Exception)
+        if candidate_eval > best_eval or random.random() < math.exp(
+            (current_eval - candidate_eval) / temp
+        ):
+            current_path, current_eval = candidate_path, candidate_eval
+            if candidate_eval > best_eval:
+                best_path, best_eval = candidate_path, candidate_eval
+                scores.append(best_eval)
+
+        if i % (params.n_iter / 10) == 0:
+            print(
+                f"Iteration {i}, Temperature {temp:.3f}, Best Evaluation {best_eval:.5f}"
+            )
+
+    return best_path

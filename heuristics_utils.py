@@ -5,6 +5,7 @@ import random
 from dataclasses import dataclass
 
 
+@dataclass
 class SAparams:
     n_iter: int
     start_temp: float
@@ -43,6 +44,7 @@ from copy import deepcopy
 import random
 from copy import deepcopy
 
+
 def replace_one_node(nodes_data: list, path: list) -> list:
     new_path = deepcopy(path)
     node_to_replace = random.randint(1, len(new_path) - 2)  # avoid start and end 'P'
@@ -51,7 +53,8 @@ def replace_one_node(nodes_data: list, path: list) -> list:
     node_names = [node for node, _ in nodes_data[1:]]
 
     possible_nodes = [
-        n for n in node_names
+        n
+        for n in node_names
         if n != old_node
         and n != new_path[node_to_replace - 1]
         and n != new_path[node_to_replace + 1]
@@ -63,7 +66,3 @@ def replace_one_node(nodes_data: list, path: list) -> list:
     new_path[node_to_replace] = random.choice(possible_nodes)
 
     return new_path
-
-
-
-
