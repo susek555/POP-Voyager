@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterator
 
+
 @dataclass
 class Path:
     path: list[str] = None
@@ -14,6 +15,3 @@ class Path:
 
     def __add__(self, new_node: str):
         return Path(self.path + [new_node])
-
-
-
