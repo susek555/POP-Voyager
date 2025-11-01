@@ -2,7 +2,7 @@ import networkx as nx
 from path import Path
 
 
-def target_function(graph: nx.Graph, path: Path) -> float:
+def objective_function(graph: nx.Graph, path: Path) -> float:
     rewards = sum(
         data["reward"] for (node, data) in graph.nodes(data=True) if node in path
     )
