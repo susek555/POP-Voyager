@@ -54,6 +54,9 @@ def SA(
         temp = params.start_temp * (params.decrease_factor**i)
         # temp = params.start_temp / math.log(1 + i)
 
+        # candidate_path = heuristics_utils.mutate_path(
+        #     nodes_data, current_path, float(temp / params.start_temp)
+        # )
         candidate_path = heuristics_utils.replace_one_node(nodes_data, current_path)
         candidate_eval = objective_function(graph, candidate_path)
 
