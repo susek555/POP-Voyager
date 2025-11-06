@@ -58,7 +58,7 @@ def SA(
         candidate_eval = objective_function(graph, candidate_path)
 
         if candidate_eval > best_eval or random.random() < math.exp(
-            (current_eval - candidate_eval) / temp
+            (candidate_eval - current_eval) / temp
         ):
             current_path, current_eval = candidate_path, candidate_eval
             if candidate_eval > best_eval:

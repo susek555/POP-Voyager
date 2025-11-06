@@ -20,7 +20,7 @@ print(f"Greedy: {objective_function(G, path)}")
 path = heuristics.SA(G, objective_function, 6, SAparams(1000, 50, 0.99))
 
 # TODO SA need more exploration
-# add dynamic metric of what % of nodes replace randomly per iteration
+# add dynamic metric of what % of nodes replace randomly per iterationŚ
 
 print(f"SA: {objective_function(G, path)}")
 
