@@ -12,6 +12,8 @@ import heuristics_utils
 from graph_types import EdgesData, NodesData
 from path import Path
 
+from graph_types import NodesData, EdgesData
+
 
 def full_random(graph: nx.Graph, max_nodes: int) -> Path:
     path = Path(["P"])
