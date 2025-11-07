@@ -1,6 +1,8 @@
 import networkx as nx
 import draw_graph
 import generate_graph
+from genetic_utils import GeneticParams
+import genetic_utils
 from objective_function import objective_function
 import heuristics
 from heuristics_utils import SAparams
@@ -16,8 +18,23 @@ path = heuristics.full_random(G, 6)
 print(f"Random: {objective_function(G, path)}")
 path = heuristics.greedy(G, 6)
 print(f"Greedy: {objective_function(G, path)}")
-# path = heuristics.SA(G, objective_function, 6, SAparams(1000, 500, 0.995, 4, 4))
-# print(f"SA: {objective_function(G, path)}")
+path = heuristics.SA(G, objective_function, 6, SAparams(10000, 500, 0.995, 4, 4))
+print(f"SA: {objective_function(G, path)}")
+path = heuristics.genetic(
+    G,
+    objective_function,
+    6,
+    GeneticParams(
+        pop_size=30,
+        generations=100,
+        mutation_rate=0.05,
+        crossover=genetic_utils.ordered_crossover,
+        selection=genetic_utils.select_tournament,
+        selection_kwargs={"tournament_size": 4},
+    ),
+)
+print(f"Genetic: {objective_function(G, path)}")
+
 path = heuristics.A_star(G, 6)
 print(f"A_star: {objective_function(G, path)}")
 

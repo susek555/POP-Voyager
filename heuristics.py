@@ -1,4 +1,5 @@
 import networkx as nx
+import genetic_utils
 from path import Path
 import random
 from typing import Callable
@@ -131,5 +132,51 @@ def A_star(
                 )
                 if child_eval > best_eval:
                     search_queue.put((child_eval, random.random(), child))
+def genetic(
+    graph: nx.Graph,
+    objective_function: Callable[[nx.Graph, Path], float],
+    max_nodes: int,
+    params: genetic_utils.GeneticParams,
+) -> Path:
+    nodes_data: NodesData = list(graph.nodes(data=True))
+    population: list[Path] = [
+        genetic_utils.get_random_path_no_duplicates(nodes_data, max_nodes)
+        for _ in range(params.pop_size)
+    ]
+    fitness = [objective_function(graph, path) for path in population]
+
+    no_change_count: int = 0
+
+    best_path, best_score = genetic_utils.get_best_path_info(population, fitness)
+
+    for _ in range(params.generations):
+        if params.no_improvement_stop and no_change_count > params.no_improvement_stop:
+            print("Ending early")
+            break
+
+        new_population: list[Path] = []
+
+        while len(new_population) < params.pop_size:
+            parent1 = params.selection(population, fitness, **params.selection_kwargs)
+            parent2 = params.selection(population, fitness, **params.selection_kwargs)
+
+            child1, child2 = params.crossover(parent1, parent2)
+
+            if random.random() < params.mutation_rate:
+                genetic_utils.mutate(child1)
+            if random.random() < params.mutation_rate:
+                genetic_utils.mutate(child2)
+
+            new_population.extend([child1, child2])
+
+        population = new_population[: params.pop_size]
+        fitness = [objective_function(graph, path) for path in population]
+        gen_best_path, gen_best_score = genetic_utils.get_best_path_info(population, fitness)
+
+        if gen_best_score > best_score:
+            best_score = gen_best_score
+            best_path = gen_best_path
+        else:
+            no_change_count += 1
 
     return best_path
