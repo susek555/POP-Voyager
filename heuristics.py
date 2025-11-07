@@ -1,15 +1,16 @@
-import networkx as nx
-import genetic_utils
-from path import Path
-import random
-from typing import Callable
-import heuristics_utils
 import math
-import numpy as np
+import random
 from concurrent.futures import ThreadPoolExecutor
 from queue import PriorityQueue
+from typing import Callable
 
-from graph_types import NodesData, EdgesData
+import networkx as nx
+import numpy as np
+
+import genetic_utils
+import heuristics_utils
+from graph_types import EdgesData, NodesData
+from path import Path
 
 
 def full_random(graph: nx.Graph, max_nodes: int) -> Path:
