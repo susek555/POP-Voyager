@@ -5,7 +5,7 @@ from typing import Optional
 from path import Path
 
 
-def draw_graph(graph: nx.Graph, title: str, path: Optional[Path] = Path()) -> None:
+def draw_graph(graph: nx.Graph, title: str, path: Path = Path()) -> None:
 
     # Get 3D positions
     pos = nx.get_node_attributes(graph, "pos")

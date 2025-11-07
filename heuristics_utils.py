@@ -1,6 +1,6 @@
 import networkx as nx
 from path import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import random
 from dataclasses import dataclass
 from copy import deepcopy
@@ -48,7 +48,7 @@ def replace_one_node(
     nodes_data: list,
     path: Path,
     excluded_indexes: list[int] = [],
-    node_to_replace: int = None,
+    node_to_replace: Optional[int] = None,
 ) -> Path:
     new_path = deepcopy(path)  # maybe not necessary here [?]
     if not node_to_replace:
@@ -98,7 +98,7 @@ def reverse_fragment(nodes_data: list, path: Path, frag_len: int) -> Path:
     end_idx = start_idx + frag_len
 
     new_path = deepcopy(path)
-    new_path[start_idx:end_idx] = reversed(new_path[start_idx:end_idx])
+    new_path[start_idx:end_idx] = list(reversed(new_path[start_idx:end_idx]))
 
     return new_path
 
