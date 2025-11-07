@@ -1,0 +1,10 @@
+[project]
+name = "pop-voyager"
+version = "0.1.0"
+description = "Search and optimization project"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["matplotlib>=3.10.7", "networkx>=3.5", "numpy>=2.3.4"]
+
+[tool.black]
+line-length = 100
