@@ -1,10 +1,9 @@
-from dataclasses import dataclass
-from typing import Iterator
+from dataclasses import dataclass, field
 
 
 @dataclass
 class Path:
-    path: list[str] = None
+    path: list[str] = field(default_factory=list)
 
     def __getitem__(self, index):
         return self.path[index]
