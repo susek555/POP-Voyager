@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+=======
+import networkx as nx
+import genetic_utils
+from path import Path
+import random
+from typing import Callable
+import heuristics_utils
+>>>>>>> 7f73ae3 (implement genetic algorithm)
 import math
 import random
 from concurrent.futures import ThreadPoolExecutor
@@ -92,6 +101,7 @@ def SA(
     return best_path
 
 
+<<<<<<< HEAD
 def A_star(
     graph: nx.Graph,
     max_nodes: int,
@@ -138,6 +148,8 @@ def A_star(
 
     return best_path
 
+=======
+>>>>>>> 7f73ae3 (implement genetic algorithm)
 def genetic(
     graph: nx.Graph,
     objective_function: Callable[[nx.Graph, Path], float],
