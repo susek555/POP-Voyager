@@ -45,7 +45,6 @@ def SA(
     params: heuristics_utils.SAparams,
 ) -> Path:
     nodes_data = list(graph.nodes(data=True))
-    # edges_data = list(graph.edges(data=True))
     best_path = heuristics_utils.get_random_path(nodes_data, max_nodes)
     best_eval = objective_function(graph, best_path)
     current_path, current_eval = best_path, best_eval
@@ -75,12 +74,6 @@ def SA(
         best_candidate_idx = np.argmax(evaluations)
         candidate_path = candidates[best_candidate_idx]
         candidate_eval = evaluations[best_candidate_idx]
-
-        # candidate_path = heuristics_utils.mutate_path(
-        #     nodes_data, current_path, mutation_strength
-        # )
-        # # candidate_path = heuristics_utils.replace_one_node(nodes_data, current_path)
-        # candidate_eval = objective_function(graph, candidate_path)
 
         if candidate_eval > best_eval or random.random() < math.exp(
             (candidate_eval - current_eval) / temp

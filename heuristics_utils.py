@@ -41,7 +41,6 @@ def get_random_path(nodes_data: list, number_of_nodes: int) -> Path:
     return Path(["P"] + [node for node, data in nodes] + ["P"])
 
 
-# nodes_data = list(nx.Graph.nodes(data=True))
 def replace_one_node(
     nodes_data: list,
     path: Path,
@@ -74,11 +73,9 @@ def replace_one_node(
     return new_path
 
 
-# nodes_data = list(nx.Graph.nodes(data=True))
 def replace_n_nodes(nodes_data: list, path: Path, n: int) -> Path:
-
     if n > len(path) - 2:
-        n = len(path) - 2  # avoid errors
+        n = len(path) - 2  # to avoid errors
     replaced_indexes = set()
     new_path = deepcopy(path)
 
@@ -90,13 +87,6 @@ def replace_n_nodes(nodes_data: list, path: Path, n: int) -> Path:
                 break
 
     return new_path
-
-
-# def swap_two_nodes(nodes_data: list, path: Path) -> Path:
-#     node_1 = random.randint(1, len(path) - 2)
-#     node_2 = node_1 + 1 if node_1 < len(path) - 1 else 1
-#     path[node_1], path[node_2] = path[node_2], path[node_1]
-#     return path
 
 
 def reverse_fragment(nodes_data: list, path: Path, frag_len: int) -> Path:
@@ -119,6 +109,7 @@ def verify_path(nodes_data: list, path: Path) -> Path:
     return path
 
 
+# nodes_data = list(nx.Graph.nodes(data=True))
 def mutate_path(nodes_data: list, path: Path, mutation_strength: float):
     new_path = deepcopy(path)
 

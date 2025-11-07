@@ -12,16 +12,11 @@ G = generate_graph.generate_graph(
     cost_factor=0.2,
 )
 
-# path = Path(['P', 's1', 's2', 's3', 'P'])
 path = heuristics.full_random(G, 6)
 print(f"Random: {objective_function(G, path)}")
 path = heuristics.greedy(G, 6)
 print(f"Greedy: {objective_function(G, path)}")
 path = heuristics.SA(G, objective_function, 6, SAparams(10000, 500, 0.995, 4, 4))
-
-# TODO SA need more exploration
-# add dynamic metric of what % of nodes replace randomly per iterationŚ
-
 print(f"SA: {objective_function(G, path)}")
 
 
