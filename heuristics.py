@@ -8,6 +8,8 @@ import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 from queue import PriorityQueue
 
+from graph_types import NodesData, EdgesData
+
 
 def full_random(graph: nx.Graph, max_nodes: int) -> Path:
     path = Path(["P"])
@@ -21,8 +23,8 @@ def full_random(graph: nx.Graph, max_nodes: int) -> Path:
 
 
 def greedy(graph: nx.Graph, max_nodes: int) -> Path:
-    nodes_data = list(graph.nodes(data=True))
-    edges_data = list(graph.edges(data=True))
+    nodes_data: NodesData = list(graph.nodes(data=True))
+    edges_data: EdgesData = list(graph.edges(data=True))
     path = Path(["P"])
 
     for i in range(0, max_nodes):
@@ -43,7 +45,7 @@ def SA(
     max_nodes: int,
     params: heuristics_utils.SAparams,
 ) -> Path:
-    nodes_data = list(graph.nodes(data=True))
+    nodes_data: NodesData = list(graph.nodes(data=True))
     best_path = heuristics_utils.get_random_path(nodes_data, max_nodes)
     best_eval = objective_function(graph, best_path)
     current_path, current_eval = best_path, best_eval
