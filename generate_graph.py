@@ -31,14 +31,16 @@ def generate_graph(
 
     return graph
 
+
 # To avoid division by 0 if nodes have the exact same position
 BIAS = 1
+
 
 def calc_cost(
     pos1: tuple[float, float, float], pos2: tuple[float, float, float], factor: float
 ) -> int:
     return int(
-        ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2 + (pos1[2] - pos2[2]) ** 2)
-        ** 0.5
-        * factor + BIAS
+        ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2 + (pos1[2] - pos2[2]) ** 2) ** 0.5
+        * factor
+        + BIAS
     )

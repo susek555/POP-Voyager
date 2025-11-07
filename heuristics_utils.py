@@ -52,9 +52,7 @@ def replace_one_node(
 ) -> Path:
     new_path = deepcopy(path)  # maybe not necessary here [?]
     if not node_to_replace:
-        valid_indexes = [
-            i for i in range(1, len(new_path) - 2) if i not in excluded_indexes
-        ]
+        valid_indexes = [i for i in range(1, len(new_path) - 2) if i not in excluded_indexes]
         if not valid_indexes:
             return new_path
         node_to_replace = random.choice(valid_indexes)
@@ -118,15 +116,11 @@ def mutate_path(nodes_data: list, path: Path, mutation_strength: float):
 
     # replace nodes
     if random.uniform(0, 1) < mutation_strength:
-        new_path = replace_n_nodes(
-            nodes_data, new_path, int(mutation_strength * (len(path) - 2))
-        )
+        new_path = replace_n_nodes(nodes_data, new_path, int(mutation_strength * (len(path) - 2)))
 
     # reverse fragment
     if random.uniform(0, 1) < mutation_strength:
-        new_path = reverse_fragment(
-            nodes_data, new_path, int(mutation_strength * (len(path) - 2))
-        )
+        new_path = reverse_fragment(nodes_data, new_path, int(mutation_strength * (len(path) - 2)))
 
     new_path = verify_path(nodes_data, new_path)
 

@@ -33,18 +33,14 @@ def draw_graph(graph: nx.Graph, title: str, path: Optional[Path] = Path()) -> No
             (pos[u][1] + pos[v][1]) / 2,
             (pos[u][2] + pos[v][2]) / 2,
         ]
-        ax.text(
-            mid[0], mid[1], mid[2], f"{graph[u][v]['cost']}", color="red", fontsize=8
-        )
+        ax.text(mid[0], mid[1], mid[2], f"{graph[u][v]['cost']}", color="red", fontsize=8)
 
     # Nodes
     for node, (x, y, z) in pos.items():
         reward = graph.nodes[node]["reward"]
         size = 100
 
-        ax.scatter(
-            x, y, z, s=size, label=node, color=("green" if node == "P" else "orange")
-        )
+        ax.scatter(x, y, z, s=size, label=node, color=("green" if node == "P" else "orange"))
 
         offset = 0.05  # procent osi Z
 
@@ -52,9 +48,7 @@ def draw_graph(graph: nx.Graph, title: str, path: Optional[Path] = Path()) -> No
         scale = (zmax - zmin) * offset
 
         ax.text(x, y, z + scale, f"{node}", color="green", fontsize=9, ha="center")
-        ax.text(
-            x, y, z - 3 * scale, f"{reward}", color="green", fontsize=9, ha="center"
-        )
+        ax.text(x, y, z - 3 * scale, f"{reward}", color="green", fontsize=9, ha="center")
 
     # Clear background
     ax.set_facecolor("none")

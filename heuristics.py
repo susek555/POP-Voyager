@@ -29,9 +29,7 @@ def greedy(graph: nx.Graph, max_nodes: int) -> Path:
         costs = heuristics_utils.get_costs_from_node(edges_data, path)
         rewards = heuristics_utils.get_rewards(nodes_data, path)
 
-        ratios = {
-            node: rewards[node] / costs[node] for node in rewards if node in costs
-        }
+        ratios = {node: rewards[node] / costs[node] for node in rewards if node in costs}
 
         next_node = max(ratios, key=ratios.get)
         path += next_node
@@ -65,9 +63,7 @@ def SA(
 
         with ThreadPoolExecutor(max_workers=params.n_threads) as executor:
             candidates = [
-                heuristics_utils.mutate_path(
-                    nodes_data, current_path, mutation_strength
-                )
+                heuristics_utils.mutate_path(nodes_data, current_path, mutation_strength)
                 for _ in range(params.n_candidates_per_thread)
             ]
             evaluations = list(executor.map(evaluate_candidate, candidates))
@@ -85,9 +81,7 @@ def SA(
                 scores.append(best_eval)
 
         if i % (params.n_iter / 10) == 0:
-            print(
-                f"Iteration {i}, Temperature {temp:.3f}, Best Evaluation {best_eval:.5f}"
-            )
+            print(f"Iteration {i}, Temperature {temp:.3f}, Best Evaluation {best_eval:.5f}")
 
     return best_path
 
