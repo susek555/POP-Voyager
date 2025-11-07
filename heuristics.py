@@ -4,6 +4,8 @@ import random
 from typing import Callable
 import heuristics_utils
 import math
+import numpy as np
+from concurrent.futures import ThreadPoolExecutor
 
 
 def full_random(graph: nx.Graph, max_nodes: int) -> Path:
@@ -51,14 +53,34 @@ def SA(
 
     for i in range(params.n_iter):
         # temp = params.start_temp * (params.n_iter - i + 1) / params.n_iter
-        temp = params.start_temp * (params.decrease_factor**i)
+        # temp = params.start_temp * (params.decrease_factor**i)
         # temp = params.start_temp / math.log(1 + i)
+        # temp = max(params.start_temp / 2, params.start_temp / math.log(2 + i))
+        temp = params.start_temp - (params.start_temp / 2 * i / params.n_iter)
+
+        mutation_strength = temp / params.start_temp
+
+        def evaluate_candidate(c):
+            return objective_function(graph, c)
+
+        with ThreadPoolExecutor(max_workers=params.n_threads) as executor:
+            candidates = [
+                heuristics_utils.mutate_path(
+                    nodes_data, current_path, mutation_strength
+                )
+                for _ in range(params.n_candidates_per_thread)
+            ]
+            evaluations = list(executor.map(evaluate_candidate, candidates))
+
+        best_candidate_idx = np.argmax(evaluations)
+        candidate_path = candidates[best_candidate_idx]
+        candidate_eval = evaluations[best_candidate_idx]
 
         # candidate_path = heuristics_utils.mutate_path(
-        #     nodes_data, current_path, float(temp / params.start_temp)
+        #     nodes_data, current_path, mutation_strength
         # )
-        candidate_path = heuristics_utils.replace_one_node(nodes_data, current_path)
-        candidate_eval = objective_function(graph, candidate_path)
+        # # candidate_path = heuristics_utils.replace_one_node(nodes_data, current_path)
+        # candidate_eval = objective_function(graph, candidate_path)
 
         if candidate_eval > best_eval or random.random() < math.exp(
             (candidate_eval - current_eval) / temp

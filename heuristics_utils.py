@@ -11,6 +11,8 @@ class SAparams:
     n_iter: int
     start_temp: float
     decrease_factor: float
+    n_threads: int
+    n_candidates_per_thread: int
 
 
 # edges_data = list(nx.Graph.edges(data=True))
@@ -41,15 +43,19 @@ def get_random_path(nodes_data: list, number_of_nodes: int) -> Path:
 
 # nodes_data = list(nx.Graph.nodes(data=True))
 def replace_one_node(
-    nodes_data: list, path: Path, excluded_indexes: list[int] = []
+    nodes_data: list,
+    path: Path,
+    excluded_indexes: list[int] = [],
+    node_to_replace: int = None,
 ) -> Path:
     new_path = deepcopy(path)  # maybe not necessary here [?]
-    valid_indexes = [
-        i for i in range(1, len(new_path) - 2) if i not in excluded_indexes
-    ]
-    if not valid_indexes:
-        return new_path
-    node_to_replace = random.choice(valid_indexes)
+    if not node_to_replace:
+        valid_indexes = [
+            i for i in range(1, len(new_path) - 2) if i not in excluded_indexes
+        ]
+        if not valid_indexes:
+            return new_path
+        node_to_replace = random.choice(valid_indexes)
 
     old_node = new_path[node_to_replace]
     node_names = [node for node, _ in nodes_data[1:]]
@@ -70,6 +76,7 @@ def replace_one_node(
 
 # nodes_data = list(nx.Graph.nodes(data=True))
 def replace_n_nodes(nodes_data: list, path: Path, n: int) -> Path:
+
     if n > len(path) - 2:
         n = len(path) - 2  # avoid errors
     replaced_indexes = set()
@@ -99,7 +106,7 @@ def reverse_fragment(nodes_data: list, path: Path, frag_len: int) -> Path:
     start_idx = random.randint(1, len(path) - frag_len - 1)
     end_idx = start_idx + frag_len
 
-    new_path = path
+    new_path = deepcopy(path)
     new_path[start_idx:end_idx] = reversed(new_path[start_idx:end_idx])
 
     return new_path
@@ -108,13 +115,7 @@ def reverse_fragment(nodes_data: list, path: Path, frag_len: int) -> Path:
 def verify_path(nodes_data: list, path: Path) -> Path:
     for i in range(1, len(path) - 2):
         if path[i] == path[i + 1]:
-            path[i] = random.choice(
-                [
-                    node
-                    for node, _ in nodes_data
-                    if node not in (path[i + 1], path[i - 1])
-                ]
-            )
+            path = replace_one_node(nodes_data, path, node_to_replace=i)
     return path
 
 
