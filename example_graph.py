@@ -20,4 +20,5 @@ path = heuristics.SA(G, objective_function, 6, SAparams(10000, 500, 0.995, 4, 4)
 print(f"SA: {objective_function(G, path)}")
 
 
+
 # draw_graph.draw_graph(G, "Example 3D Graph", path)
