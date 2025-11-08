@@ -1,10 +1,11 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "charliermarsh.ruff",
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
     },
-    "black-formatter.args": [
-        "--config",
-        "${workspaceFolder}/pyproject.toml"
-    ]
+    "ruff.lineLength": 100
 }
