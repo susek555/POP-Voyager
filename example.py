@@ -1,11 +1,11 @@
-import generate_graph
 import heuristics
+from graph.generate import generate_graph
 from objective_function import objective_function
 from utils.ant_colony import AcoParams
 from utils.genetic import GeneticParams, ordered_crossover, select_tournament
 from utils.sa import SAparams
 
-G = generate_graph.generate_graph(
+G = generate_graph(
     number_of_nodes=20,
     max_base_distance=50.0,
     reward_range=(10, 40),
@@ -51,4 +51,4 @@ path = heuristics.A_star(G, 6)
 print(f"A_star: {objective_function(G, path)}")
 
 
-# draw_graph.draw_graph(G, "Example 3D Graph", path)
+# draw_graph(G, "Example 3D Graph", path)
