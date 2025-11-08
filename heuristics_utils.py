@@ -6,15 +6,6 @@ from dataclasses import dataclass
 from copy import deepcopy
 
 
-@dataclass
-class SAparams:
-    n_iter: int
-    start_temp: float
-    decrease_factor: float
-    n_threads: int
-    n_candidates_per_thread: int
-
-
 # edges_data = list(nx.Graph.edges(data=True))
 def get_costs_from_node(edges_data: list, path: Path) -> Dict[str, Any]:
     current_node = path[-1]
@@ -42,6 +33,15 @@ def get_random_path(nodes_data: list, number_of_nodes: int) -> Path:
 
 
 # SA
+
+
+@dataclass
+class SAparams:
+    n_iter: int
+    start_temp: float
+    decrease_factor: float
+    n_threads: int
+    n_candidates_per_thread: int
 
 
 def replace_one_node(
@@ -148,9 +148,13 @@ def find_n_best_nodes(nodes_data: list, n: int) -> list:
 
 # edges_data = list(nx.Graph.edges(data=True))
 def find_n_best_edges(edges_data: list, n: int) -> list:
-    edge_costs = {(src, dst): data["cost"] for src, dst, data in edges_data}
+    edge_costs = {
+        (src, dst): data["cost"]
+        for src, dst, data in edges_data
+        if src != "P" and dst != "P"
+    }
     sorted_edges = sorted(edge_costs.items(), key=lambda item: item[1])  # best first
-    best_edges = [edge for edge in sorted_edges[: n + 1]]
+    best_edges = [edge for edge in sorted_edges[:n]]
     return best_edges
 
 
@@ -186,3 +190,7 @@ def calc_best_theoretical_objective(
         total_cost += available_best_edges[i][1]
 
     return total_reward / total_cost
+
+
+def get_children(nodes_data: list, path: Path) -> list[Path]:
+    return [path + node for node, _ in nodes_data[1:] if node != path[-1]]
