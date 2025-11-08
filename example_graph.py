@@ -1,11 +1,8 @@
-import networkx as nx
-import draw_graph
 import generate_graph
-from genetic_utils import GeneticParams
-import genetic_utils
-from objective_function import objective_function
 import heuristics
-from heuristics_utils import SAparams
+from objective_function import objective_function
+from utils.genetic import GeneticParams, ordered_crossover, select_tournament
+from utils.sa import SAparams
 
 G = generate_graph.generate_graph(
     number_of_nodes=20,
@@ -28,8 +25,8 @@ path = heuristics.genetic(
         pop_size=30,
         generations=100,
         mutation_rate=0.05,
-        crossover=genetic_utils.ordered_crossover,
-        selection=genetic_utils.select_tournament,
+        crossover=ordered_crossover,
+        selection=select_tournament,
         selection_kwargs={"tournament_size": 4},
     ),
 )

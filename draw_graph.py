@@ -1,11 +1,12 @@
-import networkx as nx
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from typing import Optional
-from path import Path
+import networkx as nx
+
+from models.path import Path
 
 
-def draw_graph(graph: nx.Graph, title: str, path: Path = Path()) -> None:
+def draw_graph(graph: nx.Graph, title: str, path: Path | None = None) -> None:
+    if path is None:
+        path = Path()
 
     # Get 3D positions
     pos = nx.get_node_attributes(graph, "pos")
@@ -23,7 +24,7 @@ def draw_graph(graph: nx.Graph, title: str, path: Path = Path()) -> None:
     #     ax.text(mid[0], mid[1], mid[2], f"{d['cost']}", color='red', fontsize=8)
 
     # Edges in path
-    for u, v in zip(path[:-1], path[1:]):
+    for u, v in zip(path[:-1], path[1:], strict=False):
         x = [pos[u][0], pos[v][0]]
         y = [pos[u][1], pos[v][1]]
         z = [pos[u][2], pos[v][2]]

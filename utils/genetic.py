@@ -1,9 +1,10 @@
-from dataclasses import dataclass, field
 import random
-from typing import Any, Callable, Optional, cast
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import Any, cast
 
-from graph_types import NodesData
-from path import Path
+from models.graph import NodesData
+from models.path import Path
 
 
 @dataclass
@@ -14,7 +15,7 @@ class GeneticParams:
     crossover: Callable[[Path, Path], tuple[Path, Path]]
     selection: Callable[[list[Path], list[float]], Path]
     selection_kwargs: dict[str, Any] = field(default_factory=dict)
-    no_improvement_stop: Optional[int] = None
+    no_improvement_stop: int | None = None
 
 
 def get_best_path_info(paths: list[Path], fitness: list[float]) -> tuple[Path, float]:
@@ -28,15 +29,15 @@ def ordered_crossover(p1: Path, p2: Path) -> tuple[Path, Path]:
     start, end = 1, len(p1) - 1
     i, j = sorted(random.sample(range(start, end), 2))
 
-    o1: list[Optional[str]] = [None] * len(p1)
-    o2: list[Optional[str]] = [None] * len(p1)
+    o1: list[str | None] = [None] * len(p1)
+    o2: list[str | None] = [None] * len(p1)
 
     o1[0] = o1[-1] = o2[0] = o2[-1] = "P"
 
     o1[i:j] = p1[i:j]
     o2[i:j] = p2[i:j]
 
-    def fill_offspring(offspring, parent):
+    def fill_offspring(offspring: list[str | None], parent: list[str] | Path) -> None:
         parent_pos = j
         offspring_pos = j
         while None in offspring:
@@ -62,12 +63,12 @@ def ordered_crossover(p1: Path, p2: Path) -> tuple[Path, Path]:
 def select_tournament(
     population: list[Path], fitness: list[float], tournament_size: int = 3
 ) -> Path:
-    competitors = random.sample(list(zip(population, fitness)), k=tournament_size)
+    competitors = random.sample(list(zip(population, fitness, strict=True)), k=tournament_size)
     winner = max(competitors, key=lambda x: x[1])[0]
     return winner
 
 
-def mutate(path: Path):
+def mutate(path: Path) -> None:
     if len(path) <= 3:
         return
     i, j = random.sample(range(1, len(path) - 2), 2)
