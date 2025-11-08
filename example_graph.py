@@ -18,7 +18,7 @@ path = heuristics.full_random(G, 6)
 print(f"Random: {objective_function(G, path)}")
 path = heuristics.greedy(G, 6)
 print(f"Greedy: {objective_function(G, path)}")
-path = heuristics.SA(G, objective_function, 6, SAparams(10000, 500, 0.995, 4, 4))
+path = heuristics.SA(G, objective_function, 6, SAparams(1000, 500, 0.995, 4, 4))
 print(f"SA: {objective_function(G, path)}")
 path = heuristics.genetic(
     G,

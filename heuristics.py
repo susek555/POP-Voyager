@@ -132,6 +132,9 @@ def A_star(
                 )
                 if child_eval > best_eval:
                     search_queue.put((child_eval, random.random(), child))
+
+    return best_path
+
 def genetic(
     graph: nx.Graph,
     objective_function: Callable[[nx.Graph, Path], float],
