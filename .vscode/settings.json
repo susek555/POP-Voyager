@@ -7,5 +7,4 @@
             "source.organizeImports.ruff": "explicit"
         }
     },
-    "ruff.lineLength": 100
 }
