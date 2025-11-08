@@ -1,6 +1,7 @@
 import generate_graph
 import heuristics
 from objective_function import objective_function
+from utils.ant_colony import AcoParams
 from utils.genetic import GeneticParams, ordered_crossover, select_tournament
 from utils.sa import SAparams
 
@@ -31,6 +32,20 @@ path = heuristics.genetic(
     ),
 )
 print(f"Genetic: {objective_function(G, path)}")
+path = heuristics.aco(
+    G,
+    objective_function,
+    6,
+    AcoParams(
+        ant_count=20,
+        iteration_count=100,
+        alpha=0.8,
+        beta=1.5,
+        pheromone_degradation_rate=0.1,
+        Q=100,
+    ),
+)
+print(f"ACO: {objective_function(G, path)}")
 
 path = heuristics.A_star(G, 6)
 print(f"A_star: {objective_function(G, path)}")
