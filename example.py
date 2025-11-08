@@ -47,7 +47,7 @@ path = heuristics.aco(
 )
 print(f"ACO: {objective_function(G, path)}")
 
-path = heuristics.A_star(G, 6)
+path = heuristics.a_star(G, 6)
 print(f"A_star: {objective_function(G, path)}")
 
 
