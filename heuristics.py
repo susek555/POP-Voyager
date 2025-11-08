@@ -120,6 +120,9 @@ def A_star(
 
         if len(current_path) == max_nodes + 1:
             current_path += start_end_node
+            current_eval = heuristics_utils.calc_best_theoretical_objective(
+                graph, best_nodes, best_edges, current_path
+            )
             if current_eval > best_eval:
                 best_eval = current_eval
                 best_path = current_path

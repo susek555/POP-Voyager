@@ -180,8 +180,8 @@ def calc_best_theoretical_objective(
         if node not in path:
             available_best_nodes.append((node, reward))
 
-    total_reward = sum(graph.nodes[node]["reward"] for node in path)
-    nodes_to_add = len(best_nodes) - len(path)
+    total_reward = sum(graph.nodes[node]["reward"] for node in set(path))
+    nodes_to_add = len(best_nodes) - len(path) + 1
     for i in range(nodes_to_add):
         total_reward += available_best_nodes[i][1]
     total_cost = sum(graph[u][v]["cost"] for u, v in edges_in_path)

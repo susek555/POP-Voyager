@@ -22,5 +22,4 @@ path = heuristics.A_star(G, 6)
 print(f"A_star: {objective_function(G, path)}")
 
 
-
 # draw_graph.draw_graph(G, "Example 3D Graph", path)
