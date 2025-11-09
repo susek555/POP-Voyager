@@ -1,3 +1,6 @@
+import utils
+import utils.ant_colony
+import utils.ant_colony.stagnation_strategies
 from graph.generate import generate_graph
 from heuristics.a_star import a_star
 from heuristics.ant_colony import aco
@@ -41,19 +44,37 @@ path = aco(
     objective_function,
     100,
     AcoParams(
-        ant_count=80,
-        iteration_count=600,
+        ant_count=100,
+        iteration_count=400,
         alpha=1,
         beta=2,
         pheromone_degradation_rate=0.1,
         Q=300,
         candidate_list_size=60,
     ),
+    stagnation_strategy=utils.ant_colony.stagnation_strategies.EarlyStoppingStrategy(200),
 )
 print(f"ACO: {objective_function(G, path)}")
+path = aco(
+    G,
+    objective_function,
+    100,
+    AcoParams(
+        ant_count=100,
+        iteration_count=400,
+        alpha=1.5,
+        beta=2.5,
+        pheromone_degradation_rate=0.15,
+        Q=300,
+        candidate_list_size=60,
+        deposit_mode="diffusion",
+        diffusion_range=1,
+    ),
+    stagnation_strategy=utils.ant_colony.stagnation_strategies.EarlyStoppingStrategy(200),
+)
+print(f"ACO (diffused): {objective_function(G, path)}")
 
 path = a_star(G, 100)
 print(f"A_star: {objective_function(G, path)}")
-
 
 # draw_graph(G, "Example 3D Graph", path)

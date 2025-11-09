@@ -1,5 +1,6 @@
 import random
 from dataclasses import dataclass
+from typing import Literal
 
 import networkx as nx
 
@@ -17,6 +18,20 @@ class AcoParams:
     default_pheromone: float = 1e-5
     candidate_list_size: int | None = None
     elite_factor: float = 2.0
+    deposit_mode: Literal["standard", "diffusion"] = "standard"
+
+    """Number of neighbors that should get deposit in diffused mode"""
+    diffusion_range: int = 1
+
+
+@dataclass
+class AcoState:
+    iteration: int
+    best_score: float
+    best_path: Path | None
+    iteration_paths: list[tuple[Path, float]]
+    no_improvement_count: int
+    graph: nx.Graph
 
 
 def init_pheromone_graph(graph: nx.Graph, pheromone_value: float) -> nx.Graph:
@@ -135,3 +150,32 @@ def deposit_pheromones(graph: nx.Graph, path: Path, score: float, Q: float) -> N
         u, v = path[i], path[i + 1]
         if graph.has_edge(u, v):
             graph[u][v]["pheromone"] += delta
+
+
+def deposit_pheromones_with_diffusion(
+    graph: nx.Graph,
+    path: Path,
+    score: float,
+    Q: float,
+    diffusion_range: int = 1,
+    candidate_lists: dict[str, set[str]] | None = None,
+) -> None:
+    delta = Q * score
+
+    deposit_pheromones(graph, path, score, Q)
+
+    visited_in_path = set(path)
+
+    for node in path:
+        depth = diffusion_range
+        neighbors_to_update = list([] if not candidate_lists else candidate_lists[node]) or list(
+            graph.neighbors(node)
+        )
+
+        for neighbor in neighbors_to_update:
+            if depth <= 0:
+                break
+            if neighbor in visited_in_path or neighbor == "P":
+                continue
+            graph[node][neighbor]["pheromone"] += delta * 0.2
+            depth -= 1
