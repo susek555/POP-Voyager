@@ -15,6 +15,8 @@ class AcoParams:
     pheromone_degradation_rate: float
     Q: float
     default_pheromone: float = 1e-5
+    candidate_list_size: int | None = None
+    elite_factor: float = 2.0
 
 
 def init_pheromone_graph(graph: nx.Graph, pheromone_value: float) -> nx.Graph:
@@ -32,13 +34,41 @@ def init_pheromone_graph(graph: nx.Graph, pheromone_value: float) -> nx.Graph:
     return graph
 
 
-def construct_ant_path(graph: nx.Graph, max_nodes: int, params: AcoParams) -> Path:
+def generate_candidate_list(graph: nx.Graph, size: int) -> dict[str, set[str]]:
+    candidate_lists: dict[str, set[str]] = {}
+    for node in graph.nodes():
+        neighs: list[str] = [n for n in graph.neighbors(node) if n != "P"]
+        scored: list[tuple[float, str]] = []
+        for n in neighs:
+            cost = graph[node][n].get("cost", 1)
+            reward = graph.nodes[n].get("reward", 1)
+            heuristic = (reward + 1.0) / (cost + 0.1)
+            scored.append((heuristic, n))
+        scored.sort(reverse=True, key=lambda x: x[0])
+        top = {n for _, n in scored[:size]}
+        candidate_lists[node] = top
+
+    return candidate_lists
+
+
+def construct_ant_path(
+    graph: nx.Graph,
+    max_nodes: int,
+    params: AcoParams,
+    candidate_lists: dict[str, set[str]] | None = None,
+) -> Path:
     current_node = "P"
     path = Path([current_node])
     visited = {current_node}
 
     while len(path) - 1 < max_nodes:
-        neighbors = [n for n in graph.neighbors(current_node) if n not in visited and n != "P"]
+        neighbors = [
+            n
+            for n in graph.neighbors(current_node)
+            if n not in visited
+            and n != "P"
+            and (candidate_lists is None or n in candidate_lists[current_node])
+        ]
 
         if not neighbors:
             break
