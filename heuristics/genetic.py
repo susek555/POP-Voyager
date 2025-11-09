@@ -7,6 +7,7 @@ import utils.genetic
 from models.graph import NodesData
 from models.path import Path
 from utils.genetic import GeneticParams
+from utils.logger import logger
 
 
 def genetic(
@@ -28,7 +29,7 @@ def genetic(
 
     for _ in range(params.generations):
         if params.no_improvement_stop and no_change_count > params.no_improvement_stop:
-            print("Ending early")
+            logger.info("Ending early")
             break
 
         new_population: list[Path] = []

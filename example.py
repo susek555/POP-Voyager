@@ -5,8 +5,11 @@ from heuristics.genetic import genetic
 from heuristics.greedy import greedy
 from heuristics.random import full_random
 from objective_function import objective_function
-from utils.ant_colony import AcoParams
+from utils.ant_colony.common import AcoParams
 from utils.genetic import GeneticParams, ordered_crossover, select_tournament
+
+# Disable <= CRITICAL logs from imported functions
+# logging.disable(logging.CRITICAL)
 
 G = generate_graph(
     number_of_nodes=500,

@@ -48,6 +48,6 @@ def aco(
             )
 
         if _iteration % 10 == 0:
-            print(f"ACO best path: {best_score}")
+            logger.info(f"ACO best path: {best_score}")
 
     return best_path if best_path is not None else Path(["P", "P"])

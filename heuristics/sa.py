@@ -9,6 +9,7 @@ import numpy as np
 import utils.sa
 from models.graph import NodesData
 from models.path import Path
+from utils.logger import logger
 from utils.sa import SAparams
 
 
@@ -56,6 +57,6 @@ def SA(
                 scores.append(best_eval)
 
         if i % (params.n_iter / 10) == 0:
-            print(f"Iteration {i}, Temperature {temp:.3f}, Best Evaluation {best_eval:.5f}")
+            logger.info(f"Iteration {i}, Temperature {temp:.3f}, Best Evaluation {best_eval:.5f}")
 
     return best_path
