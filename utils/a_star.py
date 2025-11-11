@@ -1,9 +1,15 @@
+from enum import Enum
 from functools import lru_cache
 
 import networkx as nx
 
 from models.graph import EdgesData, NodesData
 from models.path import Path
+
+
+class ChildrenFactory(Enum):
+    ALL = 1
+    N_BEST = 2
 
 
 # nodes_data= list(nx.Graph.nodes(data=True))
