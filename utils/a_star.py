@@ -28,7 +28,7 @@ def find_n_best_edges(edges_data: EdgesData, n: int) -> list:
 
 @lru_cache(maxsize=0)
 def calc_best_theoretical_objective(
-    graph: nx.Graph, best_nodes: list, best_edges: list, path: Path
+    graph: nx.Graph, best_nodes: NodesData, best_edges: EdgesData, path: Path
 ) -> float:
     edges_in_path = [(path[i], path[i + 1]) for i in range(0, len(path) - 1)]
 
@@ -58,5 +58,24 @@ def calc_best_theoretical_objective(
     return total_reward / total_cost
 
 
-def get_children(nodes_data: list, path: Path) -> list[Path]:
+def get_children(nodes_data: NodesData, path: Path) -> list[Path]:
     return [path + node for node, _ in nodes_data[1:] if node != path[-1]]
+
+
+def get_n_best_children(
+    nodes_data: NodesData, edges_data: EdgesData, path: Path, n: int
+) -> list[Path]:
+    possible_neighbors = [node for node, _ in nodes_data[1:] if node != path]
+    if len(possible_neighbors) <= n:
+        return [path + node for node in possible_neighbors]
+    edge_costs = {(src, dst): data["cost"] for src, dst, data in edges_data}
+    neighbors_score = {
+        node: edge_costs.get((path[-1], node), edge_costs.get((node, path[-1])))
+        for node in possible_neighbors
+        if (path[-1], node) in edge_costs or (node, path[-1]) in edge_costs
+    }
+    sorted_neighbors = sorted(neighbors_score.items(), key=lambda item: item[1])
+    children = []
+    for i in range(n):
+        children.append(path + sorted_neighbors[i][0])
+    return children

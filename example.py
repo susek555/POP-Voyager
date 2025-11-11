@@ -1,14 +1,9 @@
-import utils
-import utils.ant_colony
-import utils.ant_colony.stagnation_strategies
 from graph.generate import generate_graph
-from heuristics.a_star import a_star
-from heuristics.ant_colony import aco
+from heuristics.a_star import quazi_A_star
 from heuristics.genetic import genetic
 from heuristics.greedy import greedy
 from heuristics.random import full_random
 from objective_function import objective_function
-from utils.ant_colony.common import AcoParams
 from utils.genetic import GeneticParams, ordered_crossover, select_tournament
 
 # Disable <= CRITICAL logs from imported functions
@@ -25,6 +20,7 @@ path = full_random(G, 20)
 print(f"Random: {objective_function(G, path)}")
 path = greedy(G, 20)
 print(f"Greedy: {objective_function(G, path)}")
+greedy_eval = objective_function(G, path)
 path = genetic(
     G,
     objective_function,
@@ -74,7 +70,8 @@ print(f"Genetic: {objective_function(G, path)}")
 # )
 # print(f"ACO (diffused): {objective_function(G, path)}")
 
-path = a_star(G, 20)
+# path = a_star(G, 20, greedy_eval)
+path = quazi_A_star(G, 20, greedy_eval, n_children=10)
 print(f"A_star: {objective_function(G, path)}")
 
 # draw_graph(G, "Example 3D Graph", path)
