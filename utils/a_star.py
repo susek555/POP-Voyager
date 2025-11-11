@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 import networkx as nx
 
 from models.graph import EdgesData, NodesData
@@ -24,6 +26,7 @@ def find_n_best_edges(edges_data: EdgesData, n: int) -> list:
     return best_edges
 
 
+@lru_cache(maxsize=0)
 def calc_best_theoretical_objective(
     graph: nx.Graph, best_nodes: list, best_edges: list, path: Path
 ) -> float:

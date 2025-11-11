@@ -15,20 +15,20 @@ from utils.genetic import GeneticParams, ordered_crossover, select_tournament
 # logging.disable(logging.CRITICAL)
 
 G = generate_graph(
-    number_of_nodes=500,
+    number_of_nodes=50,
     max_base_distance=100.0,
     reward_range=(10, 100),
-    cost_factor=0.5,
+    cost_factor=0.2,
 )
 
-path = full_random(G, 100)
+path = full_random(G, 20)
 print(f"Random: {objective_function(G, path)}")
-path = greedy(G, 100)
+path = greedy(G, 20)
 print(f"Greedy: {objective_function(G, path)}")
 path = genetic(
     G,
     objective_function,
-    100,
+    20,
     GeneticParams(
         pop_size=30,
         generations=100,
@@ -39,42 +39,42 @@ path = genetic(
     ),
 )
 print(f"Genetic: {objective_function(G, path)}")
-path = aco(
-    G,
-    objective_function,
-    100,
-    AcoParams(
-        ant_count=100,
-        iteration_count=400,
-        alpha=1,
-        beta=2,
-        pheromone_degradation_rate=0.1,
-        Q=300,
-        candidate_list_size=60,
-    ),
-    stagnation_strategy=utils.ant_colony.stagnation_strategies.EarlyStoppingStrategy(200),
-)
-print(f"ACO: {objective_function(G, path)}")
-path = aco(
-    G,
-    objective_function,
-    100,
-    AcoParams(
-        ant_count=100,
-        iteration_count=400,
-        alpha=1.5,
-        beta=2.5,
-        pheromone_degradation_rate=0.15,
-        Q=300,
-        candidate_list_size=60,
-        deposit_mode="diffusion",
-        diffusion_range=1,
-    ),
-    stagnation_strategy=utils.ant_colony.stagnation_strategies.EarlyStoppingStrategy(200),
-)
-print(f"ACO (diffused): {objective_function(G, path)}")
+# path = aco(
+#     G,
+#     objective_function,
+#     20,
+#     AcoParams(
+#         ant_count=100,
+#         iteration_count=400,
+#         alpha=1,
+#         beta=2,
+#         pheromone_degradation_rate=0.1,
+#         Q=300,
+#         candidate_list_size=60,
+#     ),
+#     stagnation_strategy=utils.ant_colony.stagnation_strategies.EarlyStoppingStrategy(200),
+# )
+# print(f"ACO: {objective_function(G, path)}")
+# path = aco(
+#     G,
+#     objective_function,
+#     20,
+#     AcoParams(
+#         ant_count=100,
+#         iteration_count=400,
+#         alpha=1.5,
+#         beta=2.5,
+#         pheromone_degradation_rate=0.15,
+#         Q=300,
+#         candidate_list_size=60,
+#         deposit_mode="diffusion",
+#         diffusion_range=1,
+#     ),
+#     stagnation_strategy=utils.ant_colony.stagnation_strategies.EarlyStoppingStrategy(200),
+# )
+# print(f"ACO (diffused): {objective_function(G, path)}")
 
-path = a_star(G, 100)
+path = a_star(G, 20)
 print(f"A_star: {objective_function(G, path)}")
 
 # draw_graph(G, "Example 3D Graph", path)
