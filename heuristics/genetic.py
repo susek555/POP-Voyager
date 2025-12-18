@@ -56,6 +56,7 @@ def genetic(
         if gen_best_score > best_score:
             best_score = gen_best_score
             best_path = gen_best_path
+            no_change_count = 0
         else:
             no_change_count += 1
 
