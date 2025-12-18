@@ -71,7 +71,7 @@ def select_tournament(
 def mutate(path: Path) -> None:
     if len(path) <= 3:
         return
-    i, j = random.sample(range(1, len(path) - 2), 2)
+    i, j = random.sample(range(1, len(path) - 1), 2)
     path[i], path[j] = path[j], path[i]
 
 
