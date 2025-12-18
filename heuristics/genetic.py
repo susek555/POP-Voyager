@@ -36,6 +36,9 @@ def genetic(
 
         new_population: list[Path] = []
 
+        elite_path, _ = utils.genetic.get_best_path_info(population, fitness)
+        new_population.append(Path(list(elite_path)))
+
         while len(new_population) < params.pop_size:
             parent1 = params.selection(population, fitness, **params.selection_kwargs)
             parent2 = params.selection(population, fitness, **params.selection_kwargs)
