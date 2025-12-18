@@ -1,3 +1,4 @@
+import logging
 import random
 from collections.abc import Callable
 
@@ -7,7 +8,8 @@ import utils.genetic
 from models.graph import NodesData
 from models.path import Path
 from utils.genetic import GeneticParams
-from utils.logger import logger
+
+logger = logging.getLogger(__name__)
 
 
 def genetic(

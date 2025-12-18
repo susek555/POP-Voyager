@@ -1,8 +1,11 @@
+import logging
+
 import networkx as nx
 
 import utils.a_star
 from models.path import Path
-from utils.logger import logger
+
+logger = logging.getLogger(__name__)
 
 
 def A_star(

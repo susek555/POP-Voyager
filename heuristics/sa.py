@@ -1,3 +1,4 @@
+import logging
 import math
 import random
 from collections.abc import Callable
@@ -9,8 +10,9 @@ import numpy as np
 import utils.sa
 from models.graph import NodesData
 from models.path import Path
-from utils.logger import logger
 from utils.sa import SAparams
+
+logger = logging.getLogger(__name__)
 
 
 def SA(

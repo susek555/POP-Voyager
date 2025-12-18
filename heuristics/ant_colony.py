@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 
 import networkx as nx
@@ -5,7 +6,8 @@ import networkx as nx
 import utils.ant_colony.common as ant_colony
 import utils.ant_colony.stagnation_strategies as ant_colony_strategies
 from models.path import Path
-from utils.logger import logger
+
+logger = logging.getLogger(__name__)
 
 
 def aco(
@@ -36,7 +38,7 @@ def aco(
         state.iteration = iteration
         state.iteration_paths = []
 
-        for _ant in range(params.ant_count):
+        for _ in range(params.ant_count):
             path = ant_colony.construct_ant_path(state.graph, max_nodes, params, candidate_lists)
             score = objective_function(state.graph, path)
             state.iteration_paths.append((path, score))

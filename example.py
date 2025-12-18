@@ -1,3 +1,5 @@
+import logging
+
 import utils.ant_colony.stagnation_strategies
 from graph.generate import generate_graph
 from heuristics.a_star import A_star
@@ -9,9 +11,9 @@ from objective_function import objective_function
 from utils.a_star import ChildrenFactory
 from utils.ant_colony.common import AcoParams
 from utils.genetic import GeneticParams, ordered_crossover, select_tournament
+from utils.logger import setup_logger
 
-# Disable <= CRITICAL logs from imported functions
-# logging.disable(logging.CRITICAL)
+setup_logger(logging.INFO)
 
 G = generate_graph(
     number_of_nodes=30,
