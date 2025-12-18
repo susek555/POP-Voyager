@@ -32,12 +32,12 @@ path = genetic(
     objective_function,
     10,
     GeneticParams(
-        pop_size=30,
-        generations=100,
-        mutation_rate=0.05,
+        pop_size=50,
+        generations=200,
+        mutation_rate=0.15,
         crossover=ordered_crossover,
         selection=select_tournament,
-        selection_kwargs={"tournament_size": 4},
+        selection_kwargs={"tournament_size": 3},
     ),
 )
 print(f"Genetic: {objective_function(G, path)}")
