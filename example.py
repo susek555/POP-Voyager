@@ -1,22 +1,27 @@
 import logging
 
 import utils.ant_colony.stagnation_strategies
+from graph.draw import draw_graph
 from graph.generate import generate_graph
 from heuristics.a_star import A_star
 from heuristics.ant_colony import aco
 from heuristics.genetic import genetic
 from heuristics.greedy import greedy
 from heuristics.random import full_random
+from heuristics.sa import SA
 from objective_function import objective_function
 from utils.a_star import ChildrenFactory
 from utils.ant_colony.common import AcoParams
 from utils.genetic import GeneticParams, ordered_crossover, select_tournament
 from utils.logger import setup_logger
+from utils.sa import SAparams
 
 setup_logger(logging.INFO)
+# Disable <= CRITICAL logs from imported functions
+logging.disable(logging.CRITICAL)
 
 G = generate_graph(
-    number_of_nodes=30,
+    number_of_nodes=15,
     max_base_distance=100.0,
     reward_range=(10, 100),
     cost_factor=0.2,
@@ -27,6 +32,19 @@ print(f"Random: {objective_function(G, path)}")
 path = greedy(G, 10)
 print(f"Greedy: {objective_function(G, path)}")
 greedy_eval = objective_function(G, path)
+path = SA(
+    G,
+    objective_function,
+    10,
+    SAparams(
+        n_iter=5000,
+        start_temp=100.0,
+        decrease_factor=0.99,
+        n_threads=4,
+        n_candidates_per_thread=4,
+    ),
+)
+print(f"SA: {objective_function(G, path)}")
 path = genetic(
     G,
     objective_function,
@@ -81,4 +99,4 @@ print(f"ACO (diffused): {objective_function(G, path)}")
 path = A_star(G, 10, greedy_eval, childrenFactory=ChildrenFactory.N_BEST, n_children=10)
 print(f"Quazi A_star: {objective_function(G, path)}")
 
-# draw_graph(G, "Example 3D Graph", path)
+draw_graph(G, "Example 3D Graph", path)

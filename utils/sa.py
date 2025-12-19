@@ -1,8 +1,11 @@
+import math
 import random
 from copy import deepcopy
 from dataclasses import dataclass
 
-from models.graph import NodesData
+import networkx as nx
+
+from models.graph import NeighborMap, NodesData
 from models.path import Path
 
 
@@ -13,6 +16,59 @@ class SAparams:
     decrease_factor: float
     n_threads: int
     n_candidates_per_thread: int
+
+
+def precompute_nearest_neighbors(graph: nx.Graph, k: int = 20) -> NeighborMap:
+    nodes = list(graph.nodes(data=True))
+    neighbor_map = {}
+
+    for node1, data1 in nodes:
+        distances = []
+        p1 = data1["pos"]
+        for node2, data2 in nodes:
+            if node1 == node2:
+                continue
+            p2 = data2["pos"]
+            dist = math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2 + (p1[2] - p2[2]) ** 2)
+            distances.append((node2, dist))
+
+        distances.sort(key=lambda x: x[1])
+        neighbor_map[node1] = [n for n, d in distances[:k]]
+
+    return neighbor_map
+
+
+def smart_replace_one_node(
+    nodes_data: NodesData,
+    path: Path,
+    neighbor_map: NeighborMap,
+) -> Path:
+    new_path = deepcopy(path)
+
+    valid_indexes = list(range(1, len(new_path) - 2))
+    if not valid_indexes:
+        return new_path
+
+    idx_to_replace = random.choice(valid_indexes)
+
+    prev_node_name = new_path[idx_to_replace - 1]
+
+    candidates = neighbor_map.get(prev_node_name, [])
+
+    current_path_set = set(new_path)
+    valid_candidates = [c for c in candidates if c not in current_path_set]
+
+    if not valid_candidates:
+        all_nodes = [node for node, _ in nodes_data]
+        valid_candidates = [n for n in all_nodes if n not in current_path_set]
+
+    if not valid_candidates:
+        return new_path
+
+    new_node = random.choice(valid_candidates)
+    new_path[idx_to_replace] = new_node
+
+    return new_path
 
 
 def replace_one_node(
@@ -84,12 +140,19 @@ def verify_path(nodes_data: NodesData, path: Path) -> Path:
     return path
 
 
-def mutate_path(nodes_data: NodesData, path: Path, mutation_strength: float) -> Path:
+def mutate_path(
+    nodes_data: NodesData, path: Path, mutation_strength: float, neighbor_map: NeighborMap
+) -> Path:
     new_path = deepcopy(path)
 
     # replace nodes
     if random.uniform(0, 1) < mutation_strength:
-        new_path = replace_n_nodes(nodes_data, new_path, int(mutation_strength * (len(path) - 2)))
+        if random.uniform(0, 1) < 0.9:
+            new_path = smart_replace_one_node(nodes_data, new_path, neighbor_map)
+        else:
+            new_path = replace_n_nodes(
+                nodes_data, new_path, int(mutation_strength * (len(path) - 2))
+            )
 
     # reverse fragment
     if random.uniform(0, 1) < mutation_strength:

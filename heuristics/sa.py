@@ -26,6 +26,7 @@ def SA(
     best_eval = objective_function(graph, best_path)
     current_path, current_eval = best_path, best_eval
     scores = [best_eval]
+    neighbor_map = utils.sa.precompute_nearest_neighbors(graph, k=10)
 
     for i in range(params.n_iter):
         # temp = params.start_temp * (params.n_iter - i + 1) / params.n_iter
@@ -36,12 +37,12 @@ def SA(
 
         mutation_strength = temp / params.start_temp
 
-        def evaluate_candidate(c):
+        def evaluate_candidate(c: Path) -> float:
             return objective_function(graph, c)
 
         with ThreadPoolExecutor(max_workers=params.n_threads) as executor:
             candidates = [
-                utils.sa.mutate_path(nodes_data, current_path, mutation_strength)
+                utils.sa.mutate_path(nodes_data, current_path, mutation_strength, neighbor_map)
                 for _ in range(params.n_candidates_per_thread)
             ]
             evaluations = list(executor.map(evaluate_candidate, candidates))
