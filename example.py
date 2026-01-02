@@ -2,16 +2,13 @@ import logging
 
 import utils.ant_colony.stagnation_strategies
 from graph.draw import draw_graph
-from graph.generate import generate_graph
-from graph.generate_return_trap import generate_trap_graph
-from heuristics.a_star import A_star
+from graph.generate_line_circle_trap import generate_line_circle_graph
 from heuristics.ant_colony import aco
 from heuristics.genetic import genetic
 from heuristics.greedy import greedy
 from heuristics.random import full_random
 from heuristics.sa import SA
 from objective_function import objective_function
-from utils.a_star import ChildrenFactory
 from utils.ant_colony.common import AcoParams
 from utils.genetic import GeneticParams, ordered_crossover, select_tournament
 from utils.logger import setup_logger
@@ -27,7 +24,7 @@ setup_logger(logging.INFO)
 #     reward_range=(10, 100),
 #     cost_factor=0.2,
 # )
-G = generate_trap_graph(
+G = generate_line_circle_graph(
     n_nodes_line=10,
     n_nodes_circle=20,
     line_dist=1.0,
