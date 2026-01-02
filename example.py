@@ -31,17 +31,26 @@ G = generate_trap_graph(
     n_nodes_line=10,
     n_nodes_circle=20,
     line_dist=1.0,
-    circle_radius=400.0,
+    circle_radius=500.0,
     reward_range=(10, 100),
     cost_factor=0.6,
     circle_multiplier=100.0,
 )
 
+paths = {}
+evals = {}
+
 path = full_random(G, 10)
 print(f"Random: {objective_function(G, path)}")
+paths["Random"] = path
+evals["Random"] = objective_function(G, path)
+
 path = greedy(G, 10)
 print(f"Greedy: {objective_function(G, path)}")
 greedy_eval = objective_function(G, path)
+paths["Greedy"] = path
+evals["Greedy"] = objective_function(G, path)
+
 path = SA(
     G,
     objective_function,
@@ -55,6 +64,9 @@ path = SA(
     ),
 )
 print(f"SA: {objective_function(G, path)}")
+paths["SA"] = path
+evals["SA"] = objective_function(G, path)
+
 path = genetic(
     G,
     objective_function,
@@ -69,6 +81,9 @@ path = genetic(
     ),
 )
 print(f"Genetic: {objective_function(G, path)}")
+paths["Genetic"] = path
+evals["Genetic"] = objective_function(G, path)
+
 path = aco(
     G,
     objective_function,
@@ -85,6 +100,9 @@ path = aco(
     stagnation_strategy=utils.ant_colony.stagnation_strategies.EarlyStoppingStrategy(200),
 )
 print(f"ACO: {objective_function(G, path)}")
+paths["ACO"] = path
+evals["ACO"] = objective_function(G, path)
+
 path = aco(
     G,
     objective_function,
@@ -103,10 +121,14 @@ path = aco(
     stagnation_strategy=utils.ant_colony.stagnation_strategies.EarlyStoppingStrategy(200),
 )
 print(f"ACO (diffused): {objective_function(G, path)}")
+paths["ACO (diffused)"] = path
+evals["ACO (diffused)"] = objective_function(G, path)
 
 # path = A_star(G, 10, greedy_eval)
 # print(f"A_star: {objective_function(G, path)}")
 # path = A_star(G, 10, greedy_eval, childrenFactory=ChildrenFactory.N_BEST, n_children=10)
 # print(f"Quazi A_star: {objective_function(G, path)}")
+# paths["A*_greedy"] = path
+# evals["A*_greedy"] = objective_function(G, path)
 
-draw_graph(G, "Example 3D Graph", path)
+draw_graph(G, "Example 3D Graph", paths, evals)
