@@ -3,6 +3,7 @@ import logging
 import utils.ant_colony.stagnation_strategies
 from graph.draw import draw_graph
 from graph.generate import generate_graph
+from graph.generate_return_trap import generate_trap_graph
 from heuristics.a_star import A_star
 from heuristics.ant_colony import aco
 from heuristics.genetic import genetic
@@ -18,13 +19,22 @@ from utils.sa import SAparams
 
 setup_logger(logging.INFO)
 # Disable <= CRITICAL logs from imported functions
-logging.disable(logging.CRITICAL)
+# logging.disable(logging.CRITICAL)
 
-G = generate_graph(
-    number_of_nodes=15,
-    max_base_distance=100.0,
+# G = generate_graph(
+#     number_of_nodes=15,
+#     max_base_distance=100.0,
+#     reward_range=(10, 100),
+#     cost_factor=0.2,
+# )
+G = generate_trap_graph(
+    n_nodes_line=10,
+    n_nodes_circle=20,
+    line_dist=1.0,
+    circle_radius=400.0,
     reward_range=(10, 100),
-    cost_factor=0.2,
+    cost_factor=0.6,
+    circle_multiplier=100.0,
 )
 
 path = full_random(G, 10)
@@ -96,7 +106,7 @@ print(f"ACO (diffused): {objective_function(G, path)}")
 
 # path = A_star(G, 10, greedy_eval)
 # print(f"A_star: {objective_function(G, path)}")
-path = A_star(G, 10, greedy_eval, childrenFactory=ChildrenFactory.N_BEST, n_children=10)
-print(f"Quazi A_star: {objective_function(G, path)}")
+# path = A_star(G, 10, greedy_eval, childrenFactory=ChildrenFactory.N_BEST, n_children=10)
+# print(f"Quazi A_star: {objective_function(G, path)}")
 
 draw_graph(G, "Example 3D Graph", path)
