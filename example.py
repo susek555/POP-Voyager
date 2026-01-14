@@ -2,7 +2,12 @@ import logging
 
 import utils.ant_colony.stagnation_strategies
 from graph.draw import draw_graph
-from graph.generate_line_circle_trap import generate_line_circle_graph
+
+# from graph.scenarios.archipelago import generate_archipelago_graph
+# from graph.scenarios.siren_song import generate_siren_song_graph
+# from graph.scenarios.bottleneck import generate_bottleneck_graph
+# from graph.scenarios.nebula import generate_nebula_graph
+from graph.scenarios.gradient import generate_gradient_graph
 from heuristics.ant_colony import aco
 from heuristics.genetic import genetic
 from heuristics.greedy import greedy
@@ -24,14 +29,55 @@ setup_logger(logging.INFO)
 #     reward_range=(10, 100),
 #     cost_factor=0.2,
 # )
-G = generate_line_circle_graph(
-    n_nodes_line=10,
-    n_nodes_circle=20,
-    line_dist=1.0,
-    circle_radius=500.0,
-    reward_range=(10, 100),
-    cost_factor=0.6,
-    circle_multiplier=100.0,
+# G = generate_line_circle_graph(
+#     n_nodes_line=10,
+#     n_nodes_circle=20,
+#     line_dist=1.0,
+#     circle_radius=500.0,
+#     reward_range=(10, 100),
+#     cost_factor=0.6,
+#     circle_multiplier=100.0,
+# )
+# G = generate_archipelago_graph(
+#     n_clusters=4,
+#     nodes_per_cluster=8,
+#     cluster_spread=10.0,
+#     map_size=100.0,
+#     reward_range=(20, 1000),
+#     cost_factor=0.2
+# )
+# G = generate_siren_song_graph(
+#     n_local_nodes=30,
+#     local_dist_range=(5.0, 20.0),
+#     local_reward_range=(5, 15),
+#     siren_distance=150.0,
+#     siren_reward=800,
+#     cost_factor=0.2
+# )
+# G = generate_bottleneck_graph(
+#     nodes_per_side=20,
+#     bridge_nodes=1,
+#     side_distance=50.0,
+#     bubble_radius=15.0,
+#     reward_range=(20, 80),
+#     far_reward_multiplier=3.0,
+#     cost_factor=0.2
+# )
+# G = generate_nebula_graph(
+#     n_nodes=50,
+#     cloud_radius=70.0,
+#     nebula_center=(30.0, 0.0, 0.0),
+#     nebula_radius=20.0,
+#     nebula_multiplier=4.0,
+#     reward_range=(15, 60),
+#     cost_factor=0.2
+# )
+G = generate_gradient_graph(
+    n_nodes=60,
+    max_dist=120.0,
+    base_reward=15,
+    reward_scaling=8.0,
+    cost_factor=0.2
 )
 
 paths = {}
