@@ -9,7 +9,6 @@ class AlgorithmType(Enum):
     SA = "simulated_annealing"
     GENETIC = "genetic"
     ACO = "ant_colony_optimization"
-    ACO_DIFFUSION = "ant_colony_optimization_diffusion"
 
 
 class AlgorithmParams:
