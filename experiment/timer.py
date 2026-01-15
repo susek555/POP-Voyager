@@ -11,12 +11,12 @@ class Timer:
         self.elapsed: float | None = None
         self._gc_old: bool | None = None
 
-    def run(self, data: Any, targets: Any) -> Any:
+    def run(self, *args: Any, **kwargs: Any) -> Any:
         self._gc_old = gc.isenabled()
         if self.gc_disable:
             gc.disable()
         start = time.perf_counter()
-        result = self.func(data, targets)
+        result = self.func(*args, **kwargs)
         stop = time.perf_counter()
         if self.gc_disable and self._gc_old:
             gc.enable()

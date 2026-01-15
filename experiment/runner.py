@@ -3,9 +3,9 @@ from dataclasses import dataclass
 
 import networkx as nx
 
-from experiments.calls import call_algorithm, call_generate_graph
-from experiments.result import AgregatedExperimentResult, ExperimentResult
-from experiments.timer import Timer
+from experiment.calls import call_algorithm, call_generate_graph
+from experiment.result import AgregatedExperimentResult, ExperimentResult
+from experiment.timer import Timer
 from graph.config import Graph
 from objective_function import objective_function
 from utils.config import Algorithm
@@ -49,7 +49,11 @@ class ExperimentRunner:
         )
 
     def save_to_json(self, results: AgregatedExperimentResult) -> None:
-        filename = f"results/{self.experiment.name}.json"
+        filename = f"./experiments/results/{self.experiment.name}.json"
+
+        results_dict = results.__dict__.copy()
+        results_dict["best_path"] = list(results.best_path)
+
         data_to_save = {
             "experiment_name": self.experiment.name,
             "max_nodes": self.experiment.max_nodes,
@@ -61,8 +65,8 @@ class ExperimentRunner:
                 "type": self.experiment.algorithm.type.name,
                 "params": self.experiment.algorithm.params.__dict__,
             },
-            "result": results.__dict__,
-            "iteration": iter,
+            "result": results_dict,
         }
         with open(filename, "w") as f:
             json.dump(data_to_save, f, indent=4)
+
