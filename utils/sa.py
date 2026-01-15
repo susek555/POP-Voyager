@@ -7,10 +7,11 @@ import networkx as nx
 
 from models.graph import NeighborMap, NodesData
 from models.path import Path
+from utils.config import AlgorithmParams
 
 
 @dataclass
-class SAparams:
+class SAparams(AlgorithmParams):
     n_iter: int
     start_temp: float
     decrease_factor: float

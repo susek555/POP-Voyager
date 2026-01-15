@@ -4,6 +4,7 @@ import networkx as nx
 
 import utils.a_star
 from models.path import Path
+from utils.a_star import AStarParams
 
 logger = logging.getLogger(__name__)
 
@@ -11,9 +12,7 @@ logger = logging.getLogger(__name__)
 def A_star(
     graph: nx.Graph,
     max_nodes: int,
-    min_best_eval: float = 0.0,
-    childrenFactory: utils.a_star.ChildrenFactory = utils.a_star.ChildrenFactory.ALL,
-    n_children: int = 10,
+    params: AStarParams,
 ) -> Path:
     nodes_data = list(graph.nodes(data=True))
     edges_data = list(graph.edges(data=True))
@@ -21,7 +20,7 @@ def A_star(
     best_nodes = utils.a_star.find_n_best_nodes(nodes_data, max_nodes)
     best_edges = utils.a_star.find_n_best_edges(edges_data, max_nodes + 1)
     start_path = Path(["P"])
-    best_eval, best_path = min_best_eval - 1e-6, None
+    best_eval, best_path = params.min_best_eval - 1e-6, None
 
     iteration = 0
     logger.info(
@@ -46,11 +45,11 @@ def A_star(
                 logger.info(f"New best = {best_eval:.4f}")
             continue
         else:
-            if childrenFactory == utils.a_star.ChildrenFactory.ALL:
+            if params.childrenFactory == utils.a_star.ChildrenFactory.ALL:
                 children = utils.a_star.get_children(nodes_data, current_path)
             else:
                 children = utils.a_star.get_n_best_children(
-                    nodes_data, edges_data, current_path, n_children
+                    nodes_data, edges_data, current_path, params.n_children
                 )
 
             scored_children = []

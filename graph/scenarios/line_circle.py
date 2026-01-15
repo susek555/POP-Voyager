@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 import networkx as nx
 
+from graph.config import GraphParams
 from graph.generate import calc_cost
-from graph.params import GraphParams
 
 
 @dataclass

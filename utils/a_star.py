@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 from functools import lru_cache
 
@@ -5,11 +6,19 @@ import networkx as nx
 
 from models.graph import EdgesData, NodesData
 from models.path import Path
+from utils.config import AlgorithmParams
 
 
 class ChildrenFactory(Enum):
     ALL = 1
     N_BEST = 2
+
+
+@dataclass
+class AStarParams(AlgorithmParams):
+    min_best_eval: float = 0.0,
+    childrenFactory: ChildrenFactory = ChildrenFactory.ALL,
+    n_children: int = 10,
 
 
 # nodes_data= list(nx.Graph.nodes(data=True))

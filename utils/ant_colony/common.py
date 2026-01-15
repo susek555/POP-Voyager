@@ -5,10 +5,11 @@ from typing import Literal
 import networkx as nx
 
 from models.path import Path
+from utils.config import AlgorithmParams
 
 
 @dataclass
-class AcoParams:
+class AcoParams(AlgorithmParams):
     ant_count: int
     iteration_count: int
     alpha: float

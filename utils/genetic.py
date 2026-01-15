@@ -5,10 +5,11 @@ from typing import Any, cast
 
 from models.graph import NodesData
 from models.path import Path
+from utils.config import AlgorithmParams
 
 
 @dataclass
-class GeneticParams:
+class GeneticParams(AlgorithmParams):
     pop_size: int
     generations: int
     mutation_rate: float

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 import networkx as nx
 
-from graph.params import GraphParams
+from graph.config import GraphParams
 
 
 @dataclass
