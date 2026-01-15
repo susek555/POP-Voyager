@@ -1,5 +1,8 @@
 import json
+import os
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
+from multiprocessing import Manager
 
 import networkx as nx
 
@@ -22,13 +25,21 @@ class Experiment:
 
 @dataclass
 class ExperimentRunner:
-    experiment: Experiment
+    experiment: Experiment = None
+    graph: nx.Graph = None
+    lock: object = None
+
+    def update_experiment(self, experiment: Experiment, generate_new_graph: bool = False) -> None:
+        self.experiment = experiment
+        if generate_new_graph or self.graph is None:
+            self.graph = call_generate_graph(self.experiment.graph)
 
     def perform(self) -> None:
-        G = call_generate_graph(self.experiment.graph)
+        if not self.graph:
+            self.graph = call_generate_graph(self.experiment.graph)
         results = []
         for _ in range(self.experiment.times_to_run):
-            results.append(self.run_once(G))
+            results.append(self.run_once(self.graph))
         agregated_results = AgregatedExperimentResult(results, self.experiment.times_to_run)
         self.save_to_json(agregated_results)
 
@@ -49,24 +60,84 @@ class ExperimentRunner:
         )
 
     def save_to_json(self, results: AgregatedExperimentResult) -> None:
-        filename = f"./experiments/results/{self.experiment.name}.json"
+        # 1. Przygotowanie ścieżki
+        target_dir = "experiment/results"
+        os.makedirs(target_dir, exist_ok=True)
 
-        results_dict = results.__dict__.copy()
-        results_dict["best_path"] = list(results.best_path)
+        safe_name = self.experiment.name.replace("../", "").replace("./", "")
+        filename = os.path.join(target_dir, f"{safe_name}.jsonl")
+
+        best_path_nodes = (
+            list(results.best_path.nodes)
+            if hasattr(results.best_path, "nodes")
+            else list(results.best_path)
+        )
 
         data_to_save = {
             "experiment_name": self.experiment.name,
             "max_nodes": self.experiment.max_nodes,
             "graph": {
                 "scenario": self.experiment.graph.scenario.name,
-                "params": self.experiment.graph.params.__dict__,
+                "params": self.experiment.graph.params.__dict__
+                if hasattr(self.experiment.graph.params, "__dict__")
+                else self.experiment.graph.params,
             },
             "algorithm": {
                 "type": self.experiment.algorithm.type.name,
-                "params": self.experiment.algorithm.params.__dict__,
+                "params": self.experiment.algorithm.params.__dict__
+                if hasattr(self.experiment.algorithm.params, "__dict__")
+                else self.experiment.algorithm.params,
             },
-            "result": results_dict,
+            "result": {
+                "average_score": float(results.average_score),
+                "best_score": float(results.best_score),
+                "worst_score": float(results.worst_score),
+                "median_score": float(results.median_score),
+                "std_dev_score": float(results.std_dev_score),
+                "average_time": float(results.average_time),
+                "best_time": float(results.best_time),
+                "total_time": float(results.total_time),
+                "best_path": best_path_nodes,
+                "runs_count": int(results.runs_count),
+            },
         }
-        with open(filename, "w") as f:
-            json.dump(data_to_save, f, indent=4)
+        json_line = json.dumps(data_to_save) + "\n"
 
+        if self.lock:
+            with self.lock, open(filename, "a", encoding="utf-8") as f:
+                f.write(json_line)
+        else:
+            with open(filename, "a", encoding="utf-8") as f:
+                f.write(json_line)
+
+    @classmethod
+    def run_parallel(
+        cls, experiments: list[Experiment], max_workers: int = 4, reuse_graph: bool = False
+    ) -> None:
+        print(f"🚀 Starting {len(experiments)} experiments on {max_workers} workers...")
+
+        with Manager() as manager:
+            shared_lock = manager.Lock()
+
+            common_graph = None
+            if reuse_graph and experiments:
+                common_graph = call_generate_graph(experiments[0].graph)
+
+            with ProcessPoolExecutor(max_workers=max_workers) as executor:
+                futures = [
+                    executor.submit(cls._worker_task, exp, shared_lock, common_graph)
+                    for exp in experiments
+                ]
+
+                for future in as_completed(futures):
+                    try:
+                        name = future.result()
+                        print(f"✅ Completed: {name}")
+                    except Exception as e:
+                        print(f"❌ Experiment ended with error: {e}")
+
+    @staticmethod
+    def _worker_task(exp: Experiment, lock: object, graph_obj: nx.Graph) -> str:
+        runner = ExperimentRunner(experiment=exp, lock=lock, graph=graph_obj)
+        runner.perform()
+        return exp.name

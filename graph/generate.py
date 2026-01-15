@@ -8,7 +8,7 @@ from graph.config import GraphParams
 
 @dataclass
 class BasicGraphParams(GraphParams):
-    number_of_nodes: int
+    number_of_nodes: int = 50
     max_base_distance: float = 10.0
     reward_range: tuple[int, int] = (5, 20)
     cost_factor: float = 1.0
