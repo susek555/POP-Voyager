@@ -1,24 +1,32 @@
 import random
+from dataclasses import dataclass
 
 import networkx as nx
 
+from graph.params import GraphParams
+
+
+@dataclass
+class BasicGraphParams(GraphParams):
+    number_of_nodes: int
+    max_base_distance: float = 10.0
+    reward_range: tuple[int, int] = (5, 20)
+    cost_factor: float = 1.0
+
 
 def generate_graph(
-    number_of_nodes: int,
-    max_base_distance: float = 10.0,
-    reward_range: tuple[int, int] = (5, 20),
-    cost_factor: float = 1.0,
+    params: BasicGraphParams,
 ) -> nx.Graph:
     graph = nx.Graph()
     graph.add_node("P", reward=0, pos=(0, 0, 0))
 
-    for i in range(1, number_of_nodes):
+    for i in range(1, params.number_of_nodes):
         node_name = f"s{i}"
-        reward = random.randint(*reward_range)
+        reward = random.randint(*params.reward_range)
         pos = (
-            random.uniform(-max_base_distance, max_base_distance),
-            random.uniform(-max_base_distance, max_base_distance),
-            random.uniform(-max_base_distance, max_base_distance),
+            random.uniform(-params.max_base_distance, params.max_base_distance),
+            random.uniform(-params.max_base_distance, params.max_base_distance),
+            random.uniform(-params.max_base_distance, params.max_base_distance),
         )
         graph.add_node(node_name, reward=reward, pos=pos)
 
@@ -27,7 +35,7 @@ def generate_graph(
     for i, (node1, data1) in enumerate(nodes):
         for j, (node2, data2) in enumerate(nodes):
             if i < j:
-                cost = calc_cost(data1["pos"], data2["pos"], cost_factor)
+                cost = calc_cost(data1["pos"], data2["pos"], params.cost_factor)
                 graph.add_edge(node1, node2, cost=cost)
 
     return graph
