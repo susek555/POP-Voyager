@@ -20,7 +20,7 @@ def A_star(
     best_nodes = utils.a_star.find_n_best_nodes(nodes_data, max_nodes)
     best_edges = utils.a_star.find_n_best_edges(edges_data, max_nodes + 1)
     start_path = Path(["P"])
-    best_eval, best_path = params.min_best_eval - 1e-6, None
+    best_eval, best_path = - 1e-6, None
 
     iteration = 0
     logger.info(

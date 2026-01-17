@@ -17,7 +17,7 @@ if __name__ == "__main__":
             type=AlgorithmType.RANDOM,
             params=AlgorithmParams(),
         ),
-        max_nodes=10,
+        nodes=10,
         times_to_run=5,
     )
 

@@ -16,9 +16,8 @@ class ChildrenFactory(Enum):
 
 @dataclass
 class AStarParams(AlgorithmParams):
-    min_best_eval: float = 0.0,
-    childrenFactory: ChildrenFactory = ChildrenFactory.ALL,
-    n_children: int = 10,
+    childrenFactory: ChildrenFactory = ChildrenFactory.ALL
+    n_children: int = 10
 
 
 # nodes_data= list(nx.Graph.nodes(data=True))

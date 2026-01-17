@@ -2,8 +2,13 @@ from experiment.runner import Experiment
 from graph.config import Graph, GraphScenario
 from graph.generate import BasicGraphParams
 from utils.config import Algorithm, AlgorithmType
-from utils.logger import setup_logger
 from utils.sa import SAparams
+
+DEFAULT_N_ITER = 5000
+DEFAULT_START_TEMP = 100.0
+DEFAULT_DECREASE_FACTOR = 0.99
+DEFAULT_TIMES_TO_RUN = 10
+DEFAULT_PATH_NODES = 10
 
 
 def tune_n_iter() -> list[Experiment]:
@@ -20,14 +25,14 @@ def tune_n_iter() -> list[Experiment]:
                 type=AlgorithmType.SA,
                 params=SAparams(
                     n_iter=n_iter,
-                    start_temp=100.0,
-                    decrease_factor=0.99,
+                    start_temp=DEFAULT_START_TEMP,
+                    decrease_factor=DEFAULT_DECREASE_FACTOR,
                     n_threads=4,
                     n_candidates_per_thread=4,
                 ),
             ),
-            max_nodes=10,
-            times_to_run=10,
+            nodes=DEFAULT_PATH_NODES,
+            times_to_run=DEFAULT_TIMES_TO_RUN,
         )
         experiments.append(experiment)
 
@@ -47,15 +52,15 @@ def tune_sa_start_temp() -> list[Experiment]:
             algorithm=Algorithm(
                 type=AlgorithmType.SA,
                 params=SAparams(
-                    n_iter=5000,
+                    n_iter=DEFAULT_N_ITER,
                     start_temp=start_temp,
-                    decrease_factor=0.99,
+                    decrease_factor=DEFAULT_DECREASE_FACTOR,
                     n_threads=4,
                     n_candidates_per_thread=4,
                 ),
             ),
-            max_nodes=10,
-            times_to_run=10,
+            nodes=DEFAULT_PATH_NODES,
+            times_to_run=DEFAULT_TIMES_TO_RUN,
         )
         experiments.append(experiment)
 
@@ -75,15 +80,15 @@ def tune_sa_decrease_factor() -> list[Experiment]:
             algorithm=Algorithm(
                 type=AlgorithmType.SA,
                 params=SAparams(
-                    n_iter=5000,
-                    start_temp=100.0,
+                    n_iter=DEFAULT_N_ITER,
+                    start_temp=DEFAULT_START_TEMP,
                     decrease_factor=decrease_factor,
                     n_threads=4,
                     n_candidates_per_thread=4,
                 ),
             ),
-            max_nodes=10,
-            times_to_run=10,
+            nodes=DEFAULT_PATH_NODES,
+            times_to_run=DEFAULT_TIMES_TO_RUN,
         )
         experiments.append(experiment)
 
@@ -96,7 +101,6 @@ def get_all_sa_tuning_experiments() -> list[Experiment]:
     experiments.extend(tune_sa_start_temp())
     experiments.extend(tune_sa_decrease_factor())
     return experiments
-
 
 
 if __name__ == "__main__":

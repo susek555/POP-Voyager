@@ -18,6 +18,17 @@ class GeneticParams(AlgorithmParams):
     selection_kwargs: dict[str, Any] = field(default_factory=dict)
     no_improvement_stop: int | None = None
 
+    def __dict__(self) -> dict[str, Any]:
+        return {
+            "pop_size": self.pop_size,
+            "generations": self.generations,
+            "mutation_rate": self.mutation_rate,
+            "crossover": self.crossover.__name__,
+            "selection": self.selection.__name__,
+            "selection_kwargs": self.selection_kwargs,
+            "no_improvement_stop": self.no_improvement_stop,
+        }
+
 
 def get_best_path_info(paths: list[Path], fitness: list[float]) -> tuple[Path, float]:
     best_idx = max(range(len(fitness)), key=fitness.__getitem__)
