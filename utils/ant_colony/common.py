@@ -8,7 +8,7 @@ from models.path import Path
 from utils.config import AlgorithmParams
 
 
-@dataclass
+@dataclass(kw_only=True)
 class AcoParams(AlgorithmParams):
     ant_count: int
     iteration_count: int
@@ -72,6 +72,7 @@ def construct_ant_path(
     max_nodes: int,
     params: AcoParams,
     candidate_lists: dict[str, set[str]] | None = None,
+    rng: random.Random = random,
 ) -> Path:
     current_node = "P"
     path = Path([current_node])
@@ -104,7 +105,12 @@ def construct_ant_path(
 
 
 def select_next_node(
-    graph: nx.Graph, current: str, neighbors: list[str], alpha: float, beta: float
+    graph: nx.Graph,
+    current: str,
+    neighbors: list[str],
+    alpha: float,
+    beta: float,
+    rng: random.Random,
 ) -> str | None:
     if not neighbors:
         return None
@@ -126,11 +132,11 @@ def select_next_node(
 
     total = sum(probabilities)
     if total == 0:
-        return random.choice(neighbors)
+        return rng.choice(neighbors)
 
     probabilities = [p / total for p in probabilities]
 
-    selected = random.choices(neighbors, weights=probabilities, k=1)[0]
+    selected = rng.choices(neighbors, weights=probabilities, k=1)[0]
 
     return selected
 

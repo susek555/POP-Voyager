@@ -10,7 +10,7 @@ from models.path import Path
 from utils.config import AlgorithmParams
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SAparams(AlgorithmParams):
     n_iter: int
     start_temp: float
@@ -43,6 +43,7 @@ def smart_replace_one_node(
     nodes_data: NodesData,
     path: Path,
     neighbor_map: NeighborMap,
+    rng: random.Random,
 ) -> Path:
     new_path = deepcopy(path)
 
@@ -50,7 +51,7 @@ def smart_replace_one_node(
     if not valid_indexes:
         return new_path
 
-    idx_to_replace = random.choice(valid_indexes)
+    idx_to_replace = rng.choice(valid_indexes)
 
     prev_node_name = new_path[idx_to_replace - 1]
 
@@ -66,7 +67,7 @@ def smart_replace_one_node(
     if not valid_candidates:
         return new_path
 
-    new_node = random.choice(valid_candidates)
+    new_node = rng.choice(valid_candidates)
     new_path[idx_to_replace] = new_node
 
     return new_path
@@ -77,16 +78,17 @@ def replace_one_node(
     path: Path,
     excluded_indexes: list[int] | None = None,
     node_to_replace: int | None = None,
+    rng: random.Random = random,
 ) -> Path:
     if excluded_indexes is None:
         excluded_indexes = []
 
-    new_path = deepcopy(path)  # maybe not necessary here [?]
+    new_path = deepcopy(path)
     if not node_to_replace:
         valid_indexes = [i for i in range(1, len(new_path) - 2) if i not in excluded_indexes]
         if not valid_indexes:
             return new_path
-        node_to_replace = random.choice(valid_indexes)
+        node_to_replace = rng.choice(valid_indexes)
 
     old_node = new_path[node_to_replace]
     node_names = [node for node, _ in nodes_data[1:]]
@@ -100,19 +102,19 @@ def replace_one_node(
     if not possible_nodes:
         return new_path
 
-    new_path[node_to_replace] = random.choice(possible_nodes)
+    new_path[node_to_replace] = rng.choice(possible_nodes)
 
     return new_path
 
 
-def replace_n_nodes(nodes_data: NodesData, path: Path, n: int) -> Path:
+def replace_n_nodes(nodes_data: NodesData, path: Path, n: int, rng: random.Random) -> Path:
     if n > len(path) - 2:
         n = len(path) - 2  # to avoid errors
     replaced_indexes = set()
     new_path = deepcopy(path)
 
     for _ in range(n):
-        new_path = replace_one_node(nodes_data, new_path, list(replaced_indexes))
+        new_path = replace_one_node(nodes_data, new_path, list(replaced_indexes), rng=rng)
         for i in range(1, len(path) - 1):
             if path[i] != new_path[i] and i not in replaced_indexes:
                 replaced_indexes.add(i)
@@ -121,11 +123,11 @@ def replace_n_nodes(nodes_data: NodesData, path: Path, n: int) -> Path:
     return new_path
 
 
-def reverse_fragment(nodes_data: NodesData, path: Path, frag_len: int) -> Path:
+def reverse_fragment(nodes_data: NodesData, path: Path, frag_len: int, rng: random.Random) -> Path:
     if frag_len < 2 or frag_len > len(path) - 2:
         return path
 
-    start_idx = random.randint(1, len(path) - frag_len - 1)
+    start_idx = rng.randint(1, len(path) - frag_len - 1)
     end_idx = start_idx + frag_len
 
     new_path = deepcopy(path)
@@ -142,22 +144,28 @@ def verify_path(nodes_data: NodesData, path: Path) -> Path:
 
 
 def mutate_path(
-    nodes_data: NodesData, path: Path, mutation_strength: float, neighbor_map: NeighborMap
+    nodes_data: NodesData,
+    path: Path,
+    mutation_strength: float,
+    neighbor_map: NeighborMap,
+    rng: random.Random,
 ) -> Path:
     new_path = deepcopy(path)
 
     # replace nodes
-    if random.uniform(0, 1) < mutation_strength:
-        if random.uniform(0, 1) < 0.9:
-            new_path = smart_replace_one_node(nodes_data, new_path, neighbor_map)
+    if rng.uniform(0, 1) < mutation_strength:
+        if rng.uniform(0, 1) < 0.9:
+            new_path = smart_replace_one_node(nodes_data, new_path, neighbor_map, rng)
         else:
             new_path = replace_n_nodes(
-                nodes_data, new_path, int(mutation_strength * (len(path) - 2))
+                nodes_data, new_path, int(mutation_strength * (len(path) - 2)), rng=rng
             )
 
     # reverse fragment
-    if random.uniform(0, 1) < mutation_strength:
-        new_path = reverse_fragment(nodes_data, new_path, int(mutation_strength * (len(path) - 2)))
+    if rng.uniform(0, 1) < mutation_strength:
+        new_path = reverse_fragment(
+            nodes_data, new_path, int(mutation_strength * (len(path) - 2)), rng=rng
+        )
 
     new_path = verify_path(nodes_data, new_path)
 

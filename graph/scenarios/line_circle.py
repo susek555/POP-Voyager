@@ -20,6 +20,7 @@ class LineCircleGraphParams(GraphParams):
 
 
 def generate_line_circle_graph(params: LineCircleGraphParams) -> nx.Graph:
+    rng = random.Random(params.seed)
     G = nx.Graph()
     G.add_node("P", reward=0, pos=(0, 0, 0))
 
@@ -28,8 +29,8 @@ def generate_line_circle_graph(params: LineCircleGraphParams) -> nx.Graph:
     current_pos = [0, 0, 0]
     for _ in range(params.n_nodes_line):
         current_pos[0] += params.line_dist
-        pos = (current_pos[0], current_pos[1] + random.uniform(-1, 1), random.uniform(-1, 1))
-        G.add_node(f"s{idx}", reward=random.randint(*params.reward_range), pos=pos)
+        pos = (current_pos[0], current_pos[1] + rng.uniform(-1, 1), rng.uniform(-1, 1))
+        G.add_node(f"s{idx}", reward=rng.randint(*params.reward_range), pos=pos)
         idx += 1
 
     angle_step = 2 * math.pi / params.n_nodes_circle
@@ -38,11 +39,11 @@ def generate_line_circle_graph(params: LineCircleGraphParams) -> nx.Graph:
         pos = (
             params.circle_radius * math.cos(angle),
             params.circle_radius * math.sin(angle),
-            random.uniform(-1, 1),
+            rng.uniform(-1, 1),
         )
         G.add_node(
             f"s{idx}",
-            reward=random.randint(*params.reward_range) * params.circle_multiplier,
+            reward=rng.randint(*params.reward_range) * params.circle_multiplier,
             pos=pos,
         )
         idx += 1

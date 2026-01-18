@@ -23,16 +23,18 @@ def get_rewards(nodes_data: NodesData, path: Path) -> dict[str, Any]:
 
 
 # nodes_data = list(nx.Graph.nodes(data=True))
-def get_random_path(nodes_data: NodesData, number_of_nodes: int) -> Path:
+def get_random_path(nodes_data: NodesData, number_of_nodes: int, rng: random.Random) -> Path:
     nodes = []
     for _ in range(number_of_nodes):
-        node = random.choice([n for n in nodes_data[1:] if not nodes or n != nodes[-1]])
+        node = rng.choice([n for n in nodes_data[1:] if not nodes or n != nodes[-1]])
         nodes.append(node)
     return Path(["P"] + [node for node, data in nodes] + ["P"])
 
 
-def get_random_path_no_duplicates(nodes_data: NodesData, number_of_nodes: int) -> Path:
+def get_random_path_no_duplicates(
+    nodes_data: NodesData, number_of_nodes: int, rng: random.Random
+) -> Path:
     available_nodes = [n for n, _ in nodes_data[1:]]
-    chosen_nodes = random.sample(available_nodes, k=min(number_of_nodes, len(available_nodes)))
-    random.shuffle(chosen_nodes)
+    chosen_nodes = rng.sample(available_nodes, k=min(number_of_nodes, len(available_nodes)))
+    rng.shuffle(chosen_nodes)
     return Path(["P"] + chosen_nodes + ["P"])

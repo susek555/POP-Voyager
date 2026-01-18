@@ -20,21 +20,21 @@ class NebulaGraphParams(GraphParams):
 
 
 def generate_nebula_graph(params: NebulaGraphParams) -> nx.Graph:
+    rng = random.Random(params.seed)
     G = nx.Graph()
     G.add_node("P", reward=0, pos=(0.0, 0.0, 0.0))
 
     for i in range(1, params.n_nodes + 1):
-        phi = random.uniform(0, 2 * math.pi)
-        theta = random.uniform(0, math.pi)
-        r = params.cloud_radius * (random.random() ** (1 / 3))
+        phi = rng.uniform(0, 2 * math.pi)
+        theta = rng.uniform(0, math.pi)
+        r = params.cloud_radius * (rng.random() ** (1 / 3))
 
         pos = (
             r * math.sin(theta) * math.cos(phi),
             r * math.sin(theta) * math.sin(phi),
             r * math.cos(theta),
         )
-        G.add_node(f"s{i}", reward=random.randint(*params.reward_range), pos=pos)
-
+        G.add_node(f"s{i}", reward=rng.randint(*params.reward_range), pos=pos)
     nodes = list(G.nodes(data=True))
     for i in range(len(nodes)):
         for j in range(i + 1, len(nodes)):

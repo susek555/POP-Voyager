@@ -12,7 +12,10 @@ def call_algorithm(
     graph: nx.Graph,
     max_nodes: int,
     objective_function: Callable[[nx.Graph, Path], float],
+    seed: int,
 ) -> Path:
+    algorithm.params.seed = seed
+
     if algorithm.type == AlgorithmType.RANDOM:
         from heuristics.random import full_random
 
@@ -41,7 +44,9 @@ def call_algorithm(
         raise ValueError(f"Unknown algorithm type: {algorithm.type}")
 
 
-def call_generate_graph(graph: Graph) -> nx.Graph:
+def call_generate_graph(graph: Graph, seed: int) -> nx.Graph:
+    graph.params.seed = seed
+
     if graph.scenario == GraphScenario.BASIC:
         from graph.generate import generate_graph
 

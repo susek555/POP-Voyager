@@ -18,9 +18,10 @@ def genetic(
     max_nodes: int,
     params: GeneticParams,
 ) -> Path:
+    rng = random.Random(params.seed)
     nodes_data: NodesData = list(graph.nodes(data=True))
     population: list[Path] = [
-        utils.genetic.get_random_path_no_duplicates(nodes_data, max_nodes)
+        utils.genetic.get_random_path_no_duplicates(nodes_data, max_nodes, rng)
         for _ in range(params.pop_size)
     ]
     fitness = [objective_function(graph, path) for path in population]
@@ -40,15 +41,15 @@ def genetic(
         new_population.append(Path(list(elite_path)))
 
         while len(new_population) < params.pop_size:
-            parent1 = params.selection(population, fitness, **params.selection_kwargs)
-            parent2 = params.selection(population, fitness, **params.selection_kwargs)
+            parent1 = params.selection(population, fitness, **params.selection_kwargs, rng=rng)
+            parent2 = params.selection(population, fitness, **params.selection_kwargs, rng=rng)
 
-            child1, child2 = params.crossover(parent1, parent2)
+            child1, child2 = params.crossover(parent1, parent2, rng=rng)
 
-            if random.random() < params.mutation_rate:
-                utils.genetic.mutate(child1)
-            if random.random() < params.mutation_rate:
-                utils.genetic.mutate(child2)
+            if rng.random() < params.mutation_rate:
+                utils.genetic.mutate(child1, rng=rng)
+            if rng.random() < params.mutation_rate:
+                utils.genetic.mutate(child2, rng=rng)
 
             new_population.extend([child1, child2])
 

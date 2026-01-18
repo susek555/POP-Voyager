@@ -18,13 +18,14 @@ class GradientGraphParams(GraphParams):
 
 
 def generate_gradient_graph(params: GradientGraphParams) -> nx.Graph:
+    rng = random.Random(params.seed)
     G = nx.Graph()
     G.add_node("P", reward=0, pos=(0.0, 0.0, 0.0))
 
     for i in range(1, params.n_nodes + 1):
-        phi = random.uniform(0, 2 * math.pi)
-        theta = random.uniform(0, math.pi)
-        r = random.uniform(10, params.max_dist)
+        phi = rng.uniform(0, 2 * math.pi)
+        theta = rng.uniform(0, math.pi)
+        r = rng.uniform(10, params.max_dist)
 
         pos = (
             r * math.sin(theta) * math.cos(phi),

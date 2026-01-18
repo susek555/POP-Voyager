@@ -23,6 +23,7 @@ class Experiment:
     algorithm: Algorithm
     nodes: int
     times_to_run: int
+    seed: int = 42
 
 
 def clean_types(obj: object) -> object:
@@ -98,28 +99,44 @@ class ExperimentRunner:
     experiment: Experiment = None
     graph: nx.Graph = None
     lock: object = None
+    current_seed: int = 42
+    current_graph_seed: int = None
+
+    def __post_init__(self) -> None:
+        self.current_seed = self.experiment.seed
+        if self.current_graph_seed is None:
+            self.current_graph_seed = self.experiment.seed
+
+    def generate_new_graph(self) -> None:
+        self.graph = call_generate_graph(self.experiment.graph, self.current_graph_seed)
 
     def update_experiment(self, experiment: Experiment, generate_new_graph: bool = False) -> None:
         self.experiment = experiment
-        if generate_new_graph or self.graph is None:
-            self.graph = call_generate_graph(self.experiment.graph)
+        self.current_seed = experiment.seed
+        if generate_new_graph or not self.graph:
+            self.current_graph_seed = experiment.seed
+            self.generate_new_graph()
 
     def perform(self) -> None:
         if not self.graph:
-            self.graph = call_generate_graph(self.experiment.graph)
+            self.generate_new_graph()
         results = []
-        for _ in range(self.experiment.times_to_run):
-            results.append(self.run_once(self.graph))
+        for i in range(self.experiment.times_to_run):
+            iteration_seed = self.current_seed + i
+            if hasattr(self.experiment.algorithm.params, 'seed'):
+                self.experiment.algorithm.params.seed = iteration_seed
+            results.append(self.run_once(self.graph, iteration_seed))
         agregated_results = AgregatedExperimentResult(results, self.experiment.times_to_run)
         self.save_to_json(agregated_results)
 
-    def run_once(self, graph: nx.Graph) -> ExperimentResult:
+    def run_once(self, graph: nx.Graph, seed: int) -> ExperimentResult:
         timer = Timer(call_algorithm)
         path = timer.run(
             self.experiment.algorithm,
             graph,
             self.experiment.nodes,
             objective_function=objective_function,
+            seed=seed,
         )
         time = timer.get_elapsed()
         score = objective_function(graph, path)
@@ -164,8 +181,9 @@ class ExperimentRunner:
                     "best_time": round(float(results.best_time), 2),
                     "total_time": round(float(results.total_time), 2),
                     "best_path": best_path_nodes,
-                    "runs_count": int(results.runs_count),
                 },
+                "runs_count": int(results.runs_count),
+                "base_seed": int(self.experiment.seed),
             }
         )
         json_line = json.dumps(data_to_save) + "\n"
@@ -191,7 +209,7 @@ class ExperimentRunner:
 
             common_graph_data = None
             if reuse_graph and experiments:
-                g = call_generate_graph(experiments[0].graph)
+                g = call_generate_graph(experiments[0].graph, experiments[0].seed)
                 common_graph_data = nx.node_link_data(g, edges="edges")
 
             with ProcessPoolExecutor(max_workers=max_workers) as executor:

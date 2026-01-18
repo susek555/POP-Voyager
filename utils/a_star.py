@@ -14,7 +14,7 @@ class ChildrenFactory(Enum):
     N_BEST = 2
 
 
-@dataclass
+@dataclass(kw_only=True)
 class AStarParams(AlgorithmParams):
     childrenFactory: ChildrenFactory = ChildrenFactory.ALL
     n_children: int = 10

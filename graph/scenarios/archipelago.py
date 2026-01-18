@@ -18,24 +18,25 @@ class ArchipelagoGraphParams(GraphParams):
 
 
 def generate_archipelago_graph(params: ArchipelagoGraphParams) -> nx.Graph:
+    rng = random.Random(params.seed)
     G = nx.Graph()
     G.add_node("P", reward=0, pos=(0.0, 0.0, 0.0))
 
     idx = 1
     for _ in range(params.n_clusters):
         center = (
-            random.uniform(-params.map_size, params.map_size),
-            random.uniform(-params.map_size, params.map_size),
-            random.uniform(-params.map_size, params.map_size),
+            rng.uniform(-params.map_size, params.map_size),
+            rng.uniform(-params.map_size, params.map_size),
+            rng.uniform(-params.map_size, params.map_size),
         )
 
         for _ in range(params.nodes_per_cluster):
             pos = (
-                center[0] + random.uniform(-params.cluster_spread, params.cluster_spread),
-                center[1] + random.uniform(-params.cluster_spread, params.cluster_spread),
-                center[2] + random.uniform(-params.cluster_spread, params.cluster_spread),
+                center[0] + rng.uniform(-params.cluster_spread, params.cluster_spread),
+                center[1] + rng.uniform(-params.cluster_spread, params.cluster_spread),
+                center[2] + rng.uniform(-params.cluster_spread, params.cluster_spread),
             )
-            G.add_node(f"s{idx}", reward=random.randint(*params.reward_range), pos=pos)
+            G.add_node(f"s{idx}", reward=rng.randint(*params.reward_range), pos=pos)
             idx += 1
 
     nodes = list(G.nodes(data=True))

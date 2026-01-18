@@ -19,21 +19,22 @@ class SirenSongGraphParams(GraphParams):
 
 
 def generate_siren_song_graph(params: SirenSongGraphParams) -> nx.Graph:
+    rng = random.Random(params.seed)
     G = nx.Graph()
     G.add_node("P", reward=0, pos=(0.0, 0.0, 0.0))
 
     idx = 1
     for _ in range(params.n_local_nodes):
-        phi = random.uniform(0, 2 * math.pi)
-        theta = random.uniform(0, math.pi)
-        r = random.uniform(*params.local_dist_range)
+        phi = rng.uniform(0, 2 * math.pi)
+        theta = rng.uniform(0, math.pi)
+        r = rng.uniform(*params.local_dist_range)
 
         pos = (
             r * math.sin(theta) * math.cos(phi),
             r * math.sin(theta) * math.sin(phi),
             r * math.cos(theta),
         )
-        G.add_node(f"s{idx}", reward=random.randint(*params.local_reward_range), pos=pos)
+        G.add_node(f"s{idx}", reward=rng.randint(*params.local_reward_range), pos=pos)
         idx += 1
 
     siren_pos = (params.siren_distance, 0.0, 0.0)

@@ -17,16 +17,17 @@ class BasicGraphParams(GraphParams):
 def generate_graph(
     params: BasicGraphParams,
 ) -> nx.Graph:
+    rng = random.Random(params.seed)
     graph = nx.Graph()
     graph.add_node("P", reward=0, pos=(0, 0, 0))
 
     for i in range(1, params.number_of_nodes):
         node_name = f"s{i}"
-        reward = random.randint(*params.reward_range)
+        reward = rng.randint(*params.reward_range)
         pos = (
-            random.uniform(-params.max_base_distance, params.max_base_distance),
-            random.uniform(-params.max_base_distance, params.max_base_distance),
-            random.uniform(-params.max_base_distance, params.max_base_distance),
+            rng.uniform(-params.max_base_distance, params.max_base_distance),
+            rng.uniform(-params.max_base_distance, params.max_base_distance),
+            rng.uniform(-params.max_base_distance, params.max_base_distance),
         )
         graph.add_node(node_name, reward=reward, pos=pos)
 

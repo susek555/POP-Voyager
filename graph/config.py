@@ -11,9 +11,9 @@ class GraphScenario(Enum):
     NEBULA = "nebula"
     SIREN_SONG = "siren_song"
 
-
+@dataclass
 class GraphParams:
-    pass
+    seed: int = 42
 
 @dataclass
 class Graph:

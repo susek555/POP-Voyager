@@ -1,4 +1,5 @@
 import logging
+import random
 from collections.abc import Callable
 
 import networkx as nx
@@ -17,6 +18,7 @@ def aco(
     params: ant_colony.AcoParams,
     stagnation_strategy: ant_colony_strategies.StagnationStrategy | None = None,
 ) -> Path:
+    rng = random.Random(params.seed)
     if stagnation_strategy is None:
         stagnation_strategy = ant_colony_strategies.NoStrategy()
 
@@ -39,7 +41,9 @@ def aco(
         state.iteration_paths = []
 
         for _ in range(params.ant_count):
-            path = ant_colony.construct_ant_path(state.graph, max_nodes, params, candidate_lists)
+            path = ant_colony.construct_ant_path(
+                state.graph, max_nodes, params, candidate_lists, rng
+            )
             score = objective_function(state.graph, path)
             state.iteration_paths.append((path, score))
 

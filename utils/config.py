@@ -11,8 +11,9 @@ class AlgorithmType(Enum):
     ACO = "ant_colony_optimization"
 
 
+@dataclass
 class AlgorithmParams:
-    pass
+    seed: int = 42
 
 @dataclass
 class Algorithm:

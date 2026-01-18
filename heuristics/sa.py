@@ -21,8 +21,9 @@ def SA(
     max_nodes: int,
     params: SAparams,
 ) -> Path:
+    rng = random.Random(params.seed)
     nodes_data: NodesData = list(graph.nodes(data=True))
-    best_path = utils.get_random_path(nodes_data, max_nodes)
+    best_path = utils.get_random_path(nodes_data, max_nodes, rng)
     best_eval = objective_function(graph, best_path)
     current_path, current_eval = best_path, best_eval
     scores = [best_eval]
@@ -42,7 +43,7 @@ def SA(
 
         with ThreadPoolExecutor(max_workers=params.n_threads) as executor:
             candidates = [
-                utils.sa.mutate_path(nodes_data, current_path, mutation_strength, neighbor_map)
+                utils.sa.mutate_path(nodes_data, current_path, mutation_strength, neighbor_map, rng)
                 for _ in range(params.n_candidates_per_thread)
             ]
             evaluations = list(executor.map(evaluate_candidate, candidates))

@@ -8,13 +8,13 @@ from models.path import Path
 from utils.config import AlgorithmParams
 
 
-@dataclass
+@dataclass(kw_only=True)
 class GeneticParams(AlgorithmParams):
     pop_size: int
     generations: int
     mutation_rate: float
-    crossover: Callable[[Path, Path], tuple[Path, Path]]
-    selection: Callable[[list[Path], list[float]], Path]
+    crossover: Callable[[Path, Path, random.Random], tuple[Path, Path]]
+    selection: Callable[[list[Path], list[float], random.Random], Path]
     selection_kwargs: dict[str, Any] = field(default_factory=dict)
     no_improvement_stop: int | None = None
 
@@ -37,9 +37,9 @@ def get_best_path_info(paths: list[Path], fitness: list[float]) -> tuple[Path, f
     return best_path, best_score
 
 
-def ordered_crossover(p1: Path, p2: Path) -> tuple[Path, Path]:
+def ordered_crossover(p1: Path, p2: Path, rng: random.Random) -> tuple[Path, Path]:
     start, end = 1, len(p1) - 1
-    i, j = sorted(random.sample(range(start, end), 2))
+    i, j = sorted(rng.sample(range(start, end), 2))
 
     o1: list[str | None] = [None] * len(p1)
     o2: list[str | None] = [None] * len(p1)
@@ -73,22 +73,27 @@ def ordered_crossover(p1: Path, p2: Path) -> tuple[Path, Path]:
 
 
 def select_tournament(
-    population: list[Path], fitness: list[float], tournament_size: int = 3
+    population: list[Path],
+    fitness: list[float],
+    tournament_size: int,
+    rng: random.Random,
 ) -> Path:
-    competitors = random.sample(list(zip(population, fitness, strict=True)), k=tournament_size)
+    competitors = rng.sample(list(zip(population, fitness, strict=True)), k=tournament_size)
     winner = max(competitors, key=lambda x: x[1])[0]
     return winner
 
 
-def mutate(path: Path) -> None:
+def mutate(path: Path, rng: random.Random) -> None:
     if len(path) <= 3:
         return
-    i, j = random.sample(range(1, len(path) - 1), 2)
+    i, j = rng.sample(range(1, len(path) - 1), 2)
     path[i], path[j] = path[j], path[i]
 
 
-def get_random_path_no_duplicates(nodes_data: NodesData, number_of_nodes: int) -> Path:
+def get_random_path_no_duplicates(
+    nodes_data: NodesData, number_of_nodes: int, rng: random.Random
+) -> Path:
     available_nodes = [n for n, _ in nodes_data[1:]]
-    chosen_nodes = random.sample(available_nodes, k=min(number_of_nodes, len(available_nodes)))
-    random.shuffle(chosen_nodes)
+    chosen_nodes = rng.sample(available_nodes, k=min(number_of_nodes, len(available_nodes)))
+    rng.shuffle(chosen_nodes)
     return Path(["P"] + chosen_nodes + ["P"])
