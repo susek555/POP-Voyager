@@ -140,6 +140,31 @@ def tune_aco_q_value() -> list[Experiment]:
         experiments.append(experiment)
     return experiments
 
+def tune_aco_iterations() -> list[Experiment]:
+    experiment_name = "aco_tune_iterations"
+    experiments = []
+    for iterations in [100, 200, 400, 800, 1600]:
+        experiment = Experiment(
+            name=experiment_name,
+            graph=Graph(scenario=GraphScenario.BASIC, params=BasicGraphParams()),
+            algorithm=Algorithm(
+                type=AlgorithmType.ACO,
+                params=AcoParams(
+                    ant_count=DEFAULT_ANT_COUNT,
+                    iteration_count=iterations,
+                    alpha=DEFAULT_ALPHA,
+                    beta=DEFAULT_BETA,
+                    pheromone_degradation_rate=DEFAULT_DEGRADATION,
+                    Q=DEFAULT_Q,
+                    candidate_list_size=DEFAULT_CANDIDATES_LIST_SIZE
+                ),
+            ),
+            nodes=DEFAULT_PATH_NODES,
+            times_to_run=DEFAULT_TIMES_TO_RUN,
+        )
+        experiments.append(experiment)
+    return experiments
+
 def get_all_aco_tuning_experiments() -> list[Experiment]:
     experiments = []
     experiments.extend(tune_aco_ant_count())

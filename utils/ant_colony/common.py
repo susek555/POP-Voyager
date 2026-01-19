@@ -90,7 +90,7 @@ def construct_ant_path(
         if not neighbors:
             break
 
-        next_node = select_next_node(graph, current_node, neighbors, params.alpha, params.beta)
+        next_node = select_next_node(graph, current_node, neighbors, params.alpha, params.beta, rng)
 
         if next_node is None:
             break
