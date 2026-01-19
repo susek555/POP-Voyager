@@ -14,7 +14,7 @@ class GeneticParams(AlgorithmParams):
     generations: int
     mutation_rate: float
     crossover: Callable[[Path, Path, random.Random], tuple[Path, Path]]
-    selection: Callable[[list[Path], list[float], random.Random], Path]
+    selection: Callable[[list[Path], list[float], int, random.Random], Path]
     selection_kwargs: dict[str, Any] = field(default_factory=dict)
     no_improvement_stop: int | None = None
 
