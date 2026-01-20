@@ -20,7 +20,7 @@ def random_search_genetic(n_samples: int = 300) -> list[Experiment]:
 
     for _ in range(n_samples):
         exp = Experiment(
-            name="genetic_hypergrid_search",
+            name="genetic_random_search_tuning",
             nodes=10,
             times_to_run=5,
             seed=42,

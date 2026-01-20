@@ -7,18 +7,13 @@ import seaborn as sns
 
 
 def analyze_tuning_results(file_path: str) -> None:
-    # 1. Wczytanie danych JSONL
     data = []
     with open(file_path, encoding="utf-8") as f:
         for line in f:
             data.append(json.loads(line))
 
-    # 2. Spłaszczenie struktury (normalize)
-    # Wyciągamy 'algorithm.params' oraz 'result' do płaskiej tabeli
     df = pd.json_normalize(data)
 
-    # 3. Wykrycie zmiennego parametru
-    # Szukamy w kolumnach zaczynających się od 'algorithm.params.'
     param_cols = [c for c in df.columns if c.startswith("algorithm.params.")]
 
     varying_params = []
@@ -27,14 +22,12 @@ def analyze_tuning_results(file_path: str) -> None:
             varying_params.append(col)
 
     if not varying_params:
-        print(f"Nie wykryto zmiennych parametrów w pliku: {file_path}")
+        print(f"Did not detect varying parameters in file: {file_path}")
         return
 
-    # Zazwyczaj przy tuningu zmienia się tylko jeden parametr na plik
     main_param = varying_params[0]
     param_display_name = main_param.split(".")[-1]
 
-    # 4. Sortowanie danych według parametru (ważne dla wykresów liniowych)
     df = df.sort_values(by=main_param)
 
     plt.figure(figsize=(10, 6))
@@ -65,7 +58,7 @@ def analyze_tuning_results(file_path: str) -> None:
     output_img = file_path.replace("experiment/results/", "experiment/plots/tuning")
     output_img = file_path.replace(".jsonl", ".png")
     plt.savefig(output_img)
-    print(f"Wykres zapisany jako: {output_img}")
+    print(f"Plot saved as: {output_img}")
     # plt.show()
 
 
@@ -96,4 +89,4 @@ if __name__ == "__main__":
         if os.path.exists(path_to_results):
             analyze_tuning_results(path_to_results)
         else:
-            print("Nie znaleziono pliku wyników.")
+            print("Results file not found.")
