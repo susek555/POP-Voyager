@@ -18,7 +18,7 @@ class GeneticParams(AlgorithmParams):
     selection_kwargs: dict[str, Any] = field(default_factory=dict)
     no_improvement_stop: int | None = None
 
-    def __dict__(self) -> dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "pop_size": self.pop_size,
             "generations": self.generations,

@@ -40,6 +40,18 @@ def clean_types(obj: object) -> object:
     return obj
 
 
+def get_params_dict(obj: object) -> object:
+    if hasattr(obj, "to_dict") and callable(obj.to_dict):
+        return obj.to_dict()
+    if hasattr(obj, "__dict__") and not callable(obj.__dict__):
+        return obj.__dict__
+    from dataclasses import asdict, is_dataclass
+
+    if is_dataclass(obj):
+        return asdict(obj)
+    return obj
+
+
 def _run_task_internal(exp_dict: dict, lock: object, graph_data: dict | None) -> str:
     import networkx as nx
 
@@ -123,7 +135,7 @@ class ExperimentRunner:
         results = []
         for i in range(self.experiment.times_to_run):
             iteration_seed = self.current_seed + i
-            if hasattr(self.experiment.algorithm.params, 'seed'):
+            if hasattr(self.experiment.algorithm.params, "seed"):
                 self.experiment.algorithm.params.seed = iteration_seed
             results.append(self.run_once(self.graph, iteration_seed))
         agregated_results = AgregatedExperimentResult(results, self.experiment.times_to_run)
@@ -161,15 +173,11 @@ class ExperimentRunner:
                 "max_nodes": self.experiment.nodes,
                 "graph": {
                     "scenario": self.experiment.graph.scenario.name,
-                    "params": self.experiment.graph.params.__dict__
-                    if hasattr(self.experiment.graph.params, "__dict__")
-                    else self.experiment.graph.params,
+                    "params": get_params_dict(self.experiment.graph.params),
                 },
                 "algorithm": {
                     "type": self.experiment.algorithm.type.name,
-                    "params": self.experiment.algorithm.params.__dict__
-                    if hasattr(self.experiment.algorithm.params, "__dict__")
-                    else self.experiment.algorithm.params,
+                    "params": get_params_dict(self.experiment.algorithm.params),
                 },
                 "result": {
                     "average_score": round(float(results.average_score), 2),
