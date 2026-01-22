@@ -4,10 +4,10 @@ from graph.generate import BasicGraphParams
 from utils.config import Algorithm, AlgorithmType
 from utils.genetic import GeneticParams, ordered_crossover, select_tournament
 
-DEFAULT_POP_SIZE = 50
-DEFAULT_GENERATIONS = 200
-DEFAULT_MUTATION_RATE = 0.15
-DEFAULT_TOURNAMENT_SIZE = 3
+DEFAULT_POP_SIZE = 500
+DEFAULT_GENERATIONS = 500
+DEFAULT_MUTATION_RATE = 0.1
+DEFAULT_TOURNAMENT_SIZE = 2
 DEFAULT_TIMES_TO_RUN = 10
 DEFAULT_PATH_NODES = 10
 
@@ -15,7 +15,7 @@ DEFAULT_PATH_NODES = 10
 def tune_ga_pop_size() -> list[Experiment]:
     experiment_name = "ga_tune_pop_size"
     experiments = []
-    for pop_size in [10, 20, 50, 100, 200, 500]:
+    for pop_size in [50, 100, 200, 500, 1000, 2000]:
         experiment = Experiment(
             name=f"{experiment_name}",
             graph=Graph(
@@ -71,7 +71,7 @@ def tune_ga_generations() -> list[Experiment]:
 def tune_ga_mutation_rate() -> list[Experiment]:
     experiment_name = "ga_tune_mutation_rate"
     experiments = []
-    for mutation_rate in [0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.5]:
+    for mutation_rate in [0.01, 0.05, 0.1, 0.2, 0.3, 0.5]:
         experiment = Experiment(
             name=f"{experiment_name}",
             graph=Graph(

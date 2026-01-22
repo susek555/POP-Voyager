@@ -5,8 +5,8 @@ from utils.config import Algorithm, AlgorithmType
 from utils.sa import SAparams
 
 DEFAULT_N_ITER = 5000
-DEFAULT_START_TEMP = 100.0
-DEFAULT_DECREASE_FACTOR = 0.99
+DEFAULT_START_TEMP = 10.0
+DEFAULT_DECREASE_FACTOR = 0.995
 DEFAULT_TIMES_TO_RUN = 10
 DEFAULT_PATH_NODES = 10
 
@@ -42,7 +42,7 @@ def tune_n_iter() -> list[Experiment]:
 def tune_sa_start_temp() -> list[Experiment]:
     experiment_name = "sa_tune_start_temp"
     experiments = []
-    for start_temp in [10.0, 50.0, 100.0, 200.0, 500.0]:
+    for start_temp in [1.0, 5.0, 10.0, 50.0, 100.0, 200.0]:
         experiment = Experiment(
             name=f"{experiment_name}",
             graph=Graph(
