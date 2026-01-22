@@ -63,7 +63,7 @@ def greedy_compare_on_base_graph() -> Experiment:
             params=AlgorithmParams(),
         ),
         nodes=DEFAULT_PATH_NODES,
-        times_to_run=DEFAULT_TIMES_TO_RUN,
+        times_to_run=1,
     )
 
     return experiment

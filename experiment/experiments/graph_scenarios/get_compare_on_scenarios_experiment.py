@@ -48,6 +48,7 @@ def get_compare_on_scenarios_experiment(
             times_to_run=TIMES_TO_RUN,
         )
     )
+
     experiments.append(
         Experiment(
             name=EXP_NAME,
@@ -57,9 +58,10 @@ def get_compare_on_scenarios_experiment(
                 params=AlgorithmParams(),
             ),
             nodes=PATH_NODES,
-            times_to_run=TIMES_TO_RUN,
+            times_to_run=1,
         )
     )
+
     experiments.append(
         Experiment(
             name=EXP_NAME,
@@ -73,18 +75,6 @@ def get_compare_on_scenarios_experiment(
                     n_threads=4,
                     n_candidates_per_thread=4,
                 ),
-            ),
-            nodes=PATH_NODES,
-            times_to_run=TIMES_TO_RUN,
-        )
-    )
-    experiments.append(
-        Experiment(
-            name=EXP_NAME,
-            graph=GraphSetup,
-            algorithm=Algorithm(
-                type=AlgorithmType.RANDOM,
-                params=AlgorithmParams(),
             ),
             nodes=PATH_NODES,
             times_to_run=TIMES_TO_RUN,

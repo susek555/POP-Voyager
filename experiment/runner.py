@@ -59,7 +59,7 @@ def _run_task_internal(exp_dict: dict, lock: object, graph_data: dict | None) ->
     from graph.config import Graph, GraphScenario
     from utils.a_star import AStarParams
     from utils.ant_colony.common import AcoParams
-    from utils.config import Algorithm, AlgorithmType
+    from utils.config import Algorithm, AlgorithmParams, AlgorithmType
     from utils.genetic import GeneticParams
     from utils.sa import SAparams
 
@@ -76,7 +76,7 @@ def _run_task_internal(exp_dict: dict, lock: object, graph_data: dict | None) ->
         elif algo_type == AlgorithmType.A_STAR or "A_STAR" in str(algo_type):
             algo_params = AStarParams(**raw_params)
         else:
-            algo_params = raw_params
+            algo_params = AlgorithmParams(**raw_params)
 
         scenario_data = exp_dict["graph"]["scenario"]
         if isinstance(scenario_data, str):
