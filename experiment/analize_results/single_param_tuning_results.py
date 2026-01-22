@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -89,16 +90,8 @@ def analyze_tuning_results(file_path: str) -> None:
 
 
 if __name__ == "__main__":
-    results = [
-        "experiment/results/sa_tune_n_iter.jsonl",
-        "experiment/results/sa_tune_start_temp.jsonl",
-        "experiment/results/sa_tune_decrease_factor.jsonl",
-    ]
-
-    import os
+    results_dir = Path("experiment/results")
+    results = [str(file) for file in results_dir.iterdir() if file.suffix == ".jsonl"]
 
     for path in results:
-        if os.path.exists(path):
-            analyze_tuning_results(path)
-        else:
-            print(f"Brak pliku: {path}")
+        analyze_tuning_results(path)
