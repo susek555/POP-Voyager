@@ -52,7 +52,7 @@ def SA(
         candidate_path = candidates[best_candidate_idx]
         candidate_eval = evaluations[best_candidate_idx]
 
-        if candidate_eval > best_eval or random.random() < math.exp(
+        if candidate_eval > best_eval or rng.random() < math.exp(
             (candidate_eval - current_eval) / temp
         ):
             current_path, current_eval = candidate_path, candidate_eval
