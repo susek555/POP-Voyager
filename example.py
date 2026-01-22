@@ -1,41 +1,32 @@
 import logging
 
-import utils.ant_colony.stagnation_strategies
 from graph.draw import draw_graph
 
-# from graph.scenarios.archipelago import generate_archipelago_graph
 # from graph.scenarios.siren_song import generate_siren_song_graph
 # from graph.scenarios.bottleneck import generate_bottleneck_graph
 # from graph.scenarios.nebula import generate_nebula_graph
-from graph.generate import generate_graph, BasicGraphParams
-from heuristics.ant_colony import aco
-from heuristics.genetic import genetic
-from heuristics.greedy import greedy
-from heuristics.random import full_random
-from heuristics.sa import SA
-from objective_function import objective_function
-from utils.ant_colony.common import AcoParams
-from utils.config import AlgorithmParams
-from utils.genetic import GeneticParams, ordered_crossover, select_tournament
+from graph.generate import BasicGraphParams, generate_graph
+
+# from graph.scenarios.archipelago import generate_archipelago_graph
+from graph.scenarios.line_circle import LineCircleGraphParams, generate_line_circle_graph
 from utils.logger import setup_logger
-from utils.sa import SAparams
 
 setup_logger(logging.INFO)
 # Disable <= CRITICAL logs from imported functions
 # logging.disable(logging.CRITICAL)
 
-G = generate_graph(
-    BasicGraphParams()
+G = generate_graph(BasicGraphParams())
+G = generate_line_circle_graph(
+    LineCircleGraphParams(
+        n_nodes_line=10,
+        n_nodes_circle=20,
+        line_dist=1.0,
+        circle_radius=500.0,
+        reward_range=(10, 100),
+        cost_factor=0.6,
+        circle_multiplier=100.0,
+    )
 )
-# G = generate_line_circle_graph(
-#     n_nodes_line=10,
-#     n_nodes_circle=20,
-#     line_dist=1.0,
-#     circle_radius=500.0,
-#     reward_range=(10, 100),
-#     cost_factor=0.6,
-#     circle_multiplier=100.0,
-# )
 # G = generate_archipelago_graph(
 #     n_clusters=4,
 #     nodes_per_cluster=8,

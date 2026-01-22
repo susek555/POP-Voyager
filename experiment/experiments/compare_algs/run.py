@@ -26,17 +26,22 @@ from experiment.experiments.graph_scenarios.compare_on_siren_song_scenario impor
 from experiment.runner import ExperimentRunner
 
 if __name__ == "__main__":
-    all_tuning_experiments = []
-    all_tuning_experiments.extend(get_all_compare_on_base_graph())
-    all_tuning_experiments.extend(get_all_compare_on_base_graph_25_nodes())
-    all_tuning_experiments.extend(get_all_compare_on_base_graph_long_path())
-    all_tuning_experiments.extend(get_all_compare_on_archipelago_scenario())
-    all_tuning_experiments.extend(get_all_compare_on_line_circle_scenario())
-    all_tuning_experiments.extend(get_all_compare_on_nebula_scenario())
-    all_tuning_experiments.extend(get_all_compare_on_siren_song_scenario())
-    all_tuning_experiments.extend(get_all_compare_on_gradient_scenario())
-    all_tuning_experiments.extend(get_all_compare_on_bottleneck_scenario())
+    groups = {
+        "base_graph": get_all_compare_on_base_graph(),
+        "base_graph_25_nodes": get_all_compare_on_base_graph_25_nodes(),
+        "base_graph_long_path": get_all_compare_on_base_graph_long_path(),
+        "archipelago_scenario": get_all_compare_on_archipelago_scenario(),
+        "line_circle_scenario": get_all_compare_on_line_circle_scenario(),
+        "nebula_scenario": get_all_compare_on_nebula_scenario(),
+        "siren_song_scenario": get_all_compare_on_siren_song_scenario(),
+        "gradient_scenario": get_all_compare_on_gradient_scenario(),
+        "bottleneck_scenario": get_all_compare_on_bottleneck_scenario(),
+    }
 
-    ExperimentRunner.run_parallel(
-        experiments=all_tuning_experiments, max_workers=4, reuse_graph=True
-    )
+    for name, experiments in groups.items():
+        print(f"--- Running group: {name} ---")
+        ExperimentRunner.run_parallel(
+            experiments=experiments,
+            max_workers=4,
+            reuse_graph=True,
+        )
