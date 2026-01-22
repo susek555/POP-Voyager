@@ -117,27 +117,27 @@ if __name__ == "__main__":
         "experiment/results/compare_on_base_graph.jsonl",
         "Podstawowy Graf",
     )
-    plot_metaheuristic_vs_astar(
+    plot_scenario_results(
         "experiment/results/compare_on_archipelago_scenario.jsonl",
         "Scenariusz Archipelagu",
     )
-    plot_metaheuristic_vs_astar(
+    plot_scenario_results(
         "experiment/results/compare_on_line_circle_scenario.jsonl",
         "Scenariusz Linia i Koło",
     )
-    plot_metaheuristic_vs_astar(
+    plot_scenario_results(
         "experiment/results/compare_on_nebula_scenario.jsonl",
         "Scenariusz Mgławicy",
     )
-    plot_metaheuristic_vs_astar(
+    plot_scenario_results(
         "experiment/results/compare_on_siren_song_scenario.jsonl",
         "Scenariusz Pieśni Syreny",
     )
-    plot_metaheuristic_vs_astar(
+    plot_scenario_results(
         "experiment/results/compare_on_gradient_scenario.jsonl",
         "Scenariusz Gradientu",
     )
-    plot_metaheuristic_vs_astar(
+    plot_scenario_results(
         "experiment/results/compare_on_bottleneck_scenario.jsonl",
         "Scenariusz Wąskiego Gardła",
     )
