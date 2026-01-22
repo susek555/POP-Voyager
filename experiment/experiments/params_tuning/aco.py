@@ -44,8 +44,7 @@ def tune_aco_ant_count() -> list[Experiment]:
 def tune_aco_alpha() -> list[Experiment]:
     experiment_name = "aco_tune_alpha"
     experiments = []
-    pairs = [0.5, 1.0, 2.0, 3.0, 5.0, 10.0]
-    for alpha in pairs:
+    for alpha in [0.01, 0.5, 1.0, 2.0, 5.0, 10.0]:
         experiment = Experiment(
             name=experiment_name,
             graph=Graph(scenario=GraphScenario.BASIC, params=BasicGraphParams()),
@@ -71,8 +70,7 @@ def tune_aco_alpha() -> list[Experiment]:
 def tune_aco_beta() -> list[Experiment]:
     experiment_name = "aco_tune_beta"
     experiments = []
-    pairs = [0.5, 1.0, 2.0, 3.0, 5.0, 10.0]
-    for beta in pairs:
+    for beta in [0.01, 0.5, 1.0, 2.0, 5.0, 10.0]:
         experiment = Experiment(
             name=experiment_name,
             graph=Graph(scenario=GraphScenario.BASIC, params=BasicGraphParams()),
