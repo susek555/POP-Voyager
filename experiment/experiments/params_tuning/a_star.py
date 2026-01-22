@@ -12,7 +12,7 @@ DEFAULT_PATH_NODES = 10
 def tune_astar_n_children() -> list[Experiment]:
     experiment_name = "astar_tune_n_children"
     experiments = []
-    for n in [3, 5, 10]:
+    for n in [1, 3, 5, 10, 15]:
         experiment = Experiment(
             name=experiment_name,
             graph=Graph(
