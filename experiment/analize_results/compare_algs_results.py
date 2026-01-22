@@ -22,6 +22,9 @@ def plot_scenario_results(filepath: str, title: str) -> None:
         capsize=0.1,
     )
 
+    for container in ax1.containers:
+        ax1.bar_label(container, fmt="%.2f", padding=3, fontweight="bold")
+
     ax1.set_ylabel("Średni Wynik (f_celu)", fontsize=12, color="#27ae60")
     ax1.set_xlabel("Algorytm", fontsize=12)
 
