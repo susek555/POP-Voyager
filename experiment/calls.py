@@ -19,7 +19,7 @@ def call_algorithm(
     if algorithm.type == AlgorithmType.RANDOM:
         from heuristics.random import full_random
 
-        return full_random(graph, max_nodes)
+        return full_random(graph, max_nodes, algorithm.params)
     elif algorithm.type == AlgorithmType.GREEDY:
         from heuristics.greedy import greedy
 
