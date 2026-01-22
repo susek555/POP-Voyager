@@ -1,3 +1,5 @@
+import multiprocessing
+
 from experiment.experiments.compare_algs.compare_on_base_graph import get_all_compare_on_base_graph
 from experiment.experiments.compare_algs.compare_on_base_graph_25_nodes import (
     get_all_compare_on_base_graph_25_nodes,
@@ -23,7 +25,14 @@ from experiment.experiments.graph_scenarios.compare_on_nebula_scenario import (
 from experiment.experiments.graph_scenarios.compare_on_siren_song_scenario import (
     get_all_compare_on_siren_song_scenario,
 )
-from experiment.runner import ExperimentRunner
+from experiment.runner import Experiment, ExperimentRunner
+
+
+def run_group(name: str, experiments: list[Experiment]) -> None:
+    print(f"🚀 Starting group process: {name}")
+    ExperimentRunner.run_parallel(experiments=experiments, max_workers=2, reuse_graph=True)
+    print(f"✅ Group finished: {name}")
+
 
 if __name__ == "__main__":
     groups = {
@@ -38,10 +47,14 @@ if __name__ == "__main__":
         "bottleneck_scenario": get_all_compare_on_bottleneck_scenario(),
     }
 
+    processes = []
+
     for name, experiments in groups.items():
-        print(f"--- Running group: {name} ---")
-        ExperimentRunner.run_parallel(
-            experiments=experiments,
-            max_workers=4,
-            reuse_graph=True,
-        )
+        p = multiprocessing.Process(target=run_group, args=(name, experiments))
+        p.start()
+        processes.append(p)
+
+    for p in processes:
+        p.join()
+
+    print("🏁 All experiment groups completed!")
