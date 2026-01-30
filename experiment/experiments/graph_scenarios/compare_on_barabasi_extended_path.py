@@ -24,6 +24,7 @@ def get_compare_on_barabasi(n_nodes: int) -> tuple[str, Graph]:
     )
     return name, setup
 
+
 def run_group(name: str, experiments: list[Experiment]) -> None:
     print(f"🚀 Starting group process: {name}")
     ExperimentRunner.run_parallel(experiments=experiments, max_workers=2, reuse_graph=True)
@@ -34,7 +35,7 @@ def get_all_compare_on_barabasi_scenario() -> dict[str, list[Experiment]]:
     groups = {}
     for nodes in [20, 40, 60, 80, 100]:
         exp_name, graph_setup = get_compare_on_barabasi(nodes)
-        groups[exp_name] = get_compare_on_scenarios_experiment(nodes / 2, exp_name, graph_setup)
+        groups[exp_name] = get_compare_on_scenarios_experiment(nodes // 2, exp_name, graph_setup)
     return groups
 
 
