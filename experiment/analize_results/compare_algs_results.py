@@ -145,22 +145,22 @@ if __name__ == "__main__":
     #     "Scenariusz Wąskiego Gardła",
     # )
     plot_scenario_results(
-        "experiment/results/compare_on_barabasi_20_nodes.jsonl",
-        "Graf typu Barabási - (20 węzłów)",
+        "experiment/results/compare_on_barabasi_20_nodes_extended_path.jsonl",
+        "Graf typu Barabási - (20 węzłów, ścieżka 10)",
     )
     plot_scenario_results(
-        "experiment/results/compare_on_barabasi_40_nodes.jsonl",
-        "Graf typu Barabási - (40 węzłów)",
+        "experiment/results/compare_on_barabasi_40_nodes_extended_path.jsonl",
+        "Graf typu Barabási - (40 węzłów, ścieżka 20)",
     )
     plot_scenario_results(
-        "experiment/results/compare_on_barabasi_60_nodes.jsonl",
-        "Graf typu Barabási - (60 węzłów)",
+        "experiment/results/compare_on_barabasi_60_nodes_extended_path.jsonl",
+        "Graf typu Barabási - (60 węzłów, ścieżka 30)",
     )
     plot_scenario_results(
-        "experiment/results/compare_on_barabasi_80_nodes.jsonl",
-        "Graf typu Barabási - (80 węzłów)",
+        "experiment/results/compare_on_barabasi_80_nodes_extended_path.jsonl",
+        "Graf typu Barabási - (80 węzłów, ścieżka 40)",
     )
     plot_scenario_results(
-        "experiment/results/compare_on_barabasi_100_nodes.jsonl",
-        "Graf typu Barabási - (100 węzłów)",
+        "experiment/results/compare_on_barabasi_100_nodes_extended_path.jsonl",
+        "Graf typu Barabási - (100 węzłów, ścieżka 50)",
     )
