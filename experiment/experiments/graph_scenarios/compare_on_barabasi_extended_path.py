@@ -11,7 +11,7 @@ PATH_NODES = 20
 
 
 def get_compare_on_barabasi(n_nodes: int) -> tuple[str, Graph]:
-    name = f"compare_on_barabasi_{n_nodes}_nodes"
+    name = f"compare_on_barabasi_{n_nodes}_nodes_extended_path"
 
     setup = Graph(
         scenario=GraphScenario.BARABASI,
