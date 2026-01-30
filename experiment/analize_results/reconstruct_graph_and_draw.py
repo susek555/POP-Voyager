@@ -2,6 +2,7 @@ import json
 import os
 
 # Importy Twoich modułów
+from graph.barabasi import BarabasiRadialParams, generate_barabasi_radial_graph
 from graph.draw import draw_graph
 from graph.generate import BasicGraphParams, generate_graph
 from graph.scenarios.archipelago import ArchipelagoGraphParams, generate_archipelago_graph
@@ -50,6 +51,7 @@ def reconstruct_and_draw(jsonl_path: str) -> None:
         "LINE_CIRCLE": (generate_line_circle_graph, LineCircleGraphParams),
         "NEBULA": (generate_nebula_graph, NebulaGraphParams),
         "SIREN_SONG": (generate_siren_song_graph, SirenSongGraphParams),
+        "BARABASI": (generate_barabasi_radial_graph, BarabasiRadialParams),
     }
 
     gen_func, param_class = generators[scenario_name]
@@ -121,4 +123,4 @@ def reconstruct_and_draw(jsonl_path: str) -> None:
 
 
 if __name__ == "__main__":
-    reconstruct_and_draw("experiment/results/compare_on_line_circle_scenario.jsonl")
+    reconstruct_and_draw("experiment/results/compare_on_barabasi_100_nodes.jsonl")

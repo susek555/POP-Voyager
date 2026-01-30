@@ -122,19 +122,19 @@ def get_compare_on_scenarios_experiment(
         )
     )
 
-    experiments.append(
-        Experiment(
-            name=EXP_NAME,
-            graph=GraphSetup,
-            algorithm=Algorithm(
-                type=AlgorithmType.A_STAR,
-                params=AStarParams(
-                    childrenFactory=ChildrenFactory.N_BEST, n_children=DEFAULT_N_CHILDREN
-                ),
-            ),
-            nodes=PATH_NODES,
-            times_to_run=1,
-        )
-    )
+    # experiments.append(
+    #     Experiment(
+    #         name=EXP_NAME,
+    #         graph=GraphSetup,
+    #         algorithm=Algorithm(
+    #             type=AlgorithmType.A_STAR,
+    #             params=AStarParams(
+    #                 childrenFactory=ChildrenFactory.N_BEST, n_children=DEFAULT_N_CHILDREN
+    #             ),
+    #         ),
+    #         nodes=PATH_NODES,
+    #         times_to_run=1,
+    #     )
+    # )
 
     return experiments

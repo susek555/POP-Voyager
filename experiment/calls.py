@@ -75,5 +75,9 @@ def call_generate_graph(graph: Graph, seed: int) -> nx.Graph:
         from graph.scenarios.siren_song import generate_siren_song_graph
 
         return generate_siren_song_graph(graph.params)
+    elif graph.scenario == GraphScenario.BARABASI:
+        from graph.barabasi import generate_barabasi_radial_graph
+
+        return generate_barabasi_radial_graph(graph.params)
     else:
         raise ValueError(f"Unknown graph scenario: {graph.scenario}")

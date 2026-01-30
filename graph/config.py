@@ -10,6 +10,7 @@ class GraphScenario(Enum):
     LINE_CIRCLE = "line_circle"
     NEBULA = "nebula"
     SIREN_SONG = "siren_song"
+    BARABASI = "barabasi"
 
 @dataclass
 class GraphParams:

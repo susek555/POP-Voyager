@@ -1,32 +1,32 @@
 import logging
 
-from graph.draw import draw_graph
-
 # from graph.scenarios.siren_song import generate_siren_song_graph
 # from graph.scenarios.bottleneck import generate_bottleneck_graph
 # from graph.scenarios.nebula import generate_nebula_graph
-from graph.generate import BasicGraphParams, generate_graph
+# from graph.generate import BasicGraphParams, generate_graph
+from graph.barabasi import BarabasiRadialParams, generate_barabasi_radial_graph
+from graph.draw import draw_graph
 
 # from graph.scenarios.archipelago import generate_archipelago_graph
-from graph.scenarios.line_circle import LineCircleGraphParams, generate_line_circle_graph
+# from graph.scenarios.line_circle import LineCircleGraphParams, generate_line_circle_graph
 from utils.logger import setup_logger
 
 setup_logger(logging.INFO)
 # Disable <= CRITICAL logs from imported functions
 # logging.disable(logging.CRITICAL)
 
-G = generate_graph(BasicGraphParams())
-G = generate_line_circle_graph(
-    LineCircleGraphParams(
-        n_nodes_line=10,
-        n_nodes_circle=20,
-        line_dist=1.0,
-        circle_radius=500.0,
-        reward_range=(10, 100),
-        cost_factor=0.6,
-        circle_multiplier=100.0,
-    )
-)
+# G = generate_graph(BasicGraphParams())
+# G = generate_line_circle_graph(
+#     LineCircleGraphParams(
+#         n_nodes_line=10,
+#         n_nodes_circle=20,
+#         line_dist=1.0,
+#         circle_radius=500.0,
+#         reward_range=(10, 100),
+#         cost_factor=0.6,
+#         circle_multiplier=100.0,
+#     )
+# )
 # G = generate_archipelago_graph(
 #     n_clusters=4,
 #     nodes_per_cluster=8,
@@ -68,6 +68,9 @@ G = generate_line_circle_graph(
 #     reward_scaling=8.0,
 #     cost_factor=0.2
 # )
+G = generate_barabasi_radial_graph(BarabasiRadialParams(n_nodes=200))
+
+print(max(G.edges(data=True), key=lambda x: x[2]["cost"]))
 
 paths = {}
 evals = {}
