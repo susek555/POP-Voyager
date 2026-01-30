@@ -1,0 +1,622 @@
+\documentclass{article}
+\linespread{1.3}
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+\usepackage{listings}
+\usepackage{courier} % Przykładowa czcionka monospaced
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage[utf8]{inputenc}   % Kodowanie UTF-8
+\usepackage[T1]{fontenc}      % Poprawne wyświetlanie polskich znaków
+\usepackage[polish]{babel}    % Polskie ustawienia językowe
+\usepackage{booktabs}
+\usepackage{amsmath}
+
+
+\title{POP Zadanie 12 - Voyager \\
+Dokumentacja końcowa}
+\author{Michał Suski 331439, Damian D'Souza 331368}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Treść zadania}
+
+Jesteś kapitanem statku USS Voyager i próbujesz powrócić na Ziemię z Kwadrantu Delta, ale przed wyruszeniem w drogę z planety $P$
+musisz zgromadzić odpowiednią ilość deuteru. Możesz odwiedzić $n$ stacji kosmicznych przy czym odwiedzając stację kosmiczną $s_i$ zyskujesz
+$d_i$ jednostek deuteru. Podróż między stacjami kosmicznymi $s_i$ i $s_j$ kosztuje Cię $k_{ij}>0$ jednostek deuteru.
+
+Zaprojektuj eksperyment, w którym wykorzystasz algorytmy heurystyczne w celu znalezienia trasy cyklicznej między planetą $P$, a stacjami kosmicznymi, która zapewni Ci maksymalny stosunek zysków do strat.
+
+\section{Opis problemu i sposobu rozwiązania}
+
+Problem będzie interpretowany jako graf nieskierowany, którego wierzchołki to stacje kosmiczne oraz planeta $P$. Do krawędzi są przypisane koszty, a do wierzchołków nagrody.
+\begin{itemize}
+	\item Z każdego wierzchołka można przejść do każdego innego (graf pełny).
+	\item Wierzchołki na trasie mogą się powtarzać, jednak tylko przy pierwszej wizycie w danym wierzchołku przyznawana jest nagroda.
+\end{itemize}
+Funkcja celu dla cyklu $C$ - stosunek zysków do strat (maksymalizacja):
+
+\[
+	f_{celu}(C) = \frac{\displaystyle \sum_{v \in C} d(v)}{\displaystyle \sum_{(u,v) \in C} k_{uv}}
+\]
+
+\begin{itemize}
+	\item Maksymalna liczba odwiedzonych wierzchołków jest równa $n$.
+	\item Początek i koniec trasy w wierzchołku P, więc liczba przebytych krawędzi jest równa $n+1$.
+\end{itemize}
+
+Ścieżka jest reprezentowana przez ciąg wierzchołków (istotna jest kolejność) z wierzchołkiem $P$ na początku oraz końcu.
+
+\subsection{Generowanie grafu}
+Do $x \geq n$ stacji zostaną przypisane koordynaty w przestrzeni trójwymiarowej. Koszty przemieszczania się między stacjami będą proporcjonalne do odległości euklidesowej między nimi. Taki sposób interpretacji problemu może pomóc w ewentualnej wizualizacji grafu.
+
+\section{Zaimplementowane algorytmy}
+
+\begin{enumerate}
+	\item \textbf{Algorytm losowy} - losowy wybór wierzchołków z ustalonym początkiem i końcem w $P$.
+	\item \textbf{Algorytm zachłanny} - decyzja na podstawie stosunku zysku do kosztu przejścia na kolejny wierzchołek.
+	\item \textbf{Symulowane wyżarzanie - SA} - przestrzenią przeszukiwań są wszystkie kompletne ścieżki długości n. Sąsiedzi są generowani:
+	      \begin{itemize}
+		      \item najczęściej poprzez podmienienie jednego wierzchołka na jeden z sąsiednich pod względem odległości euklidesowej.
+		      \item rzadziej przez podmienienie wierzchołka na inny losowy z całego grafu
+		      \item oraz przez odwrócenie kolejności odwiedzania wierzchołków na losowym fragmencie ścieżki.
+	      \end{itemize}
+	      W obrębie jednej iteracji wielowątkowo generowanych jest wielu sąsiadów, aby wzmocnić tendencje eksploracyjne algorytmu.
+	\item \textbf{Algorytm genetyczny - GA} - utrzymuje populację losowych ścieżek i ewoluuje je w kolejnych generacjach.
+	      Dopasowanie to wartość funkcji celu. W każdej generacji:
+	      \begin{itemize}
+		      \item najlepsza ścieżka jest kopiowana (elitaryzm),
+		      \item rodzice wybierani są turniejowo,
+		      \item krzyżowanie typu \textit{ordered crossover} zachowuje kolejność wierzchołków i unika duplikatów,
+		      \item mutacja polega na zamianie dwóch wierzchołków wewnątrz ścieżki,
+		      \item opcjonalne wczesne zatrzymanie po wielu generacjach bez poprawy.
+	      \end{itemize}
+	\item \textbf{Algorytm mrówkowy - ACO} - mrówki budują ścieżki probabilistycznie, kierując się feromonem i heurystyką jakości przejścia.
+	      Prawdopodobieństwo wyboru następnego wierzchołka jest proporcjonalne do $ \text{pheromone}^\alpha \cdot \text{heuristic}^\beta $,
+	      gdzie heurystyka to $\frac{\text{reward}+1}{\text{cost}+0.1}$ (unika dzielenia przez zero).
+	      Po każdej iteracji:
+	      \begin{itemize}
+		      \item feromon na krawędziach paruje,
+		      \item feromon jest deponowany na krawędziach ścieżek o dodatnim wyniku,
+		      \item opcjonalnie ogranicza się wybór do list kandydatów (najlepsze k sąsiadów),
+		      \item strategia stagnacji może zatrzymać algorytm przy braku poprawy.
+	      \end{itemize}
+	      \textbf{Wariant diffused} - oprócz standardowej depozycji feromonu na krawędziach ścieżki, część feromonu jest rozlewana na
+	      sąsiednie krawędzie w pobliżu wierzchołków ścieżki, co zwiększa eksplorację lokalnego sąsiedztwa.
+	\item \textbf{Algorytm A*} - przestrzenią przeszukiwań jest stopniowo budowana ścieżka. Funkcja heurystyczna opiera się na wypełnieniu reszty ścieżki najlepszymi możliwymi parami wierzchołek - krawędź pod względem stosunku zysku do kosztu.
+	      \begin{itemize}
+		      \item Rezygnuje ona z ograniczenia ciągłości ścieżki, co gwarantuje przesadny optymizm - \textbf{dopuszczalność}.
+		      \item Błąd oszacowania maleje wraz z budową ścieżki, gdyż teoretyczne najlepsze wierzchołki są stopniowo zastępowane tymi realnymi, słabszymi - \textbf{monotoniczność}.
+	      \end{itemize}
+	      Funkcja heurystyczna jest bardzo słaba, jednak nie udało się znaleźć alternatywnej, dla której dopuszczalność oraz monotoniczność byłyby spełnione.
+	      Zastosowane optymalizacje czasowe to:
+	      \begin{itemize}
+		      \item Algorytm przeszukuje rozwiązania w głąb, aby jak najszybciej uzyskać pierwszą wartość końcową, względem której można odcinać słabsze gałęzie na wcześniejszym etapie.
+		      \item Algorytm może sprawdzać jedynie $k$ najlepszych sąsiadów danego węzła, aby ograniczyć szerokość przestrzeni przeszukiwań.
+	      \end{itemize}
+\end{enumerate}
+
+\section{Metodyka eksperymentalna}
+
+W celu przeprowadzenia rzetelnej analizy porównawczej zaimplementowanych algorytmów opracowano ujednoliconą strukturę eksperymentu. Pojedynczy eksperyment definiowany jest jako obiekt konfiguracyjny, w skład którego wchodzą następujące elementy:
+
+\begin{itemize}
+	\item \textbf{Identyfikator eksperymentu} – unikalna nazwa pozwalająca na późniejszą klasyfikację wyników.
+	\item \textbf{Konfiguracja algorytmu} – określenie rodzaju zastosowanej heurystyki wraz z kompletem specyficznych dla niej hiperparametrów.
+	\item \textbf{Charakterystyka instancji problemu} – definicja rodzaju grafu oraz parametrów jego generacji.
+	\item \textbf{Liczba powtórzeń} – parametr określający krotność uruchomienia algorytmu dla danej instancji. Ze względu na stochastyczny charakter części zaimplementowanych metod, wielokrotne próby są niezbędne do uzyskania wyników istotnych statystycznie.
+	\item \textbf{Ziarno generatora liczb losowych (ang. \textit{seed})} – parametr zapewniający powtarzalność doświadczeń. Przyjęto strategię, w której ziarno bazowe jest stosowane do generacji grafu, a następnie deterministycznie inkrementowane dla każdego kolejnego uruchomienia algorytmu wewnątrz danego eksperymentu.
+\end{itemize}
+
+
+
+Rezultatem przeprowadzenia tak zdefiniowanego badania jest zestaw metryk statystycznych, obejmujący: średnią arytmetyczną, medianę, wartości ekstremalne (wynik najlepszy i najgorszy), odchylenie standardowe (jako miarę stabilności algorytmu) oraz średni czas wykonania obliczeń.
+
+W celu optymalizacji procesu badawczego zaimplementowano dedykowaną klasę  \textit{Experiment Runner}. Pozwala ona na:
+\begin{enumerate}
+	\item \textbf{Zrównoleglenie obliczeń} – wykorzystanie przetwarzania wieloprocesowego do jednoczesnego przeprowadzania wielu eksperymentów, co znacząco skraca całkowity czas oczekiwania na wyniki.
+	\item \textbf{Automatyczną persystencję danych} – zapisywanie wyników w formacie JSONL (\textit{JSON Lines}), co umożliwia ich łatwą strukturę, odporność na błędy zapisu i wygodną późniejszą analizę.
+\end{enumerate}
+
+Kompletna implementacja skryptów sterujących, odpowiedzialnych za konfigurację oraz sekwencyjne uruchamianie zdefiniowanych scenariuszy badawczych, znajduje się w strukturze katalogów projektu w lokalizacji \texttt{/experiment/experiments}.
+
+\section{Optymalizacja hiperparametrów}
+
+Kluczowym elementem rzetelnej analizy porównawczej algorytmów heurystycznych jest ich uprzednia optymalizacja. Wyznaczone w ten sposób zestawy wartości stanowią konfigurację bazową dla wszystkich dalszych eksperymentów badawczych.
+
+Jako metodę strojenia wybrano przeszukiwanie losowe (\textit{random search}) przy narzuconym limicie całkowitej liczby uruchomień. Dla każdego z hiperparametrów zdefiniowano dyskretną przestrzeń poszukiwań (zbiór dopuszczalnych wartości), z której w sposób losowy generowano zestawy testowe. Podejście to pozwala na efektywną eksplorację wielowymiarowej przestrzeni parametrów przy zachowaniu akceptowalnego budżetu czasowego. Wybrano 300 zestawów parametrów i wykonano po 5 uruchomień na każdy.
+
+
+Wszystkie algorytmy poddano procesowi strojenia na identycznej instancji problemu, co pozwoliło na wyeliminowanie wpływu struktury grafu na proces doboru parametrów. Testowy graf składał się z 50 wierzchołków rozmieszczonych zgodnie z rozkładem jednostajnym wewnątrz trójwymiarowego sześcianu. Ścieżka ma stałą długość 10 wierzchołków.
+
+Najlepsze parametry zostały wybrane w pierwszej kolejności na podstawie największego średniego uzyskanego wyniku funkcji celu, a w drugiej na podstawie najmniejszego odchylenia standardowego.
+
+\subsection{SA - Symulowane wyżarzanie}
+
+\begin{table}[h]
+	\centering
+	\caption{Wyniki algorytmu SA.}
+	\label{tab:sa_random_tuning_results}
+	\begin{tabular}{lr}
+		\hline
+		Średni uzyskany wynik                          & 2.42 \\
+		Odchylenie standardowe                         & 0.03 \\
+		Średni czas jednego uruchomienia (w sekundach) & 1.91 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[h]
+	\centering
+	\caption{Zoptymalizowane hiperparametry dla algorytmu SA.}
+	\label{tab:sa_params}
+	\begin{tabular}{lr}
+		\hline
+		\textbf{Parametr}                                   & \textbf{Wartość} \\ \hline
+		Liczba iteracji (\texttt{n\_iter})                  & 5000             \\
+		Temperatura początkowa (\texttt{start\_temp})       & 10               \\
+		Współczynnik chłodzenia (\texttt{decrease\_factor}) & 0.995            \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsection{GA - Algorytm genetyczny}
+
+\begin{table}[h]
+	\centering
+	\caption{Wyniki algorytmu GA.}
+	\label{tab:genetic_random_tuning_results}
+	\begin{tabular}{lr}
+		\hline
+		Średni uzyskany wynik                          & 2.6   \\
+		Odchylenie standardowe                         & 0.03  \\
+		Średni czas jednego uruchomienia (w sekundach) & 10.62 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{Zoptymalizowane hiperparametry dla algorytmu GA.}
+	\label{tab:ga_params}
+	\begin{tabular}{@{}ll@{}}
+		\toprule
+		\textbf{Parametr}                                       & \textbf{Wartość} \\ \midrule
+		Wielkość populacji (\texttt{pop\_size})                 & 500              \\
+		Liczba generacji (\texttt{generations})                 & 500              \\
+		Współczynnik mutacji (\texttt{mutation\_rate})          & 0,1              \\
+		Wielkość szranek w selekcji (\texttt{tournament\_size}) & 2                \\
+		Brak poprawy (\texttt{no\_improvement\_stop})           & brak ograniczeń  \\ \bottomrule
+	\end{tabular}
+\end{table}
+
+
+\subsection{ACO - Algorytm mrówkowy}
+
+\begin{table}[H]
+	\centering
+	\caption{Wyniki algorytmu ACO.}
+	\label{tab:aco_random_tuning_results}
+	\begin{tabular}{lr}
+		\hline
+		Średni uzyskany wynik                          & 2,65 \\
+		Odchylenie standardowe                         & 0,00 \\
+		Średni czas jednego uruchomienia (w sekundach) & 6,59 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{Zoptymalizowane hiperparametry dla algorytmu ACO.}
+	\label{tab:aco_params}
+	\begin{tabular}{@{}ll@{}}
+		\toprule
+		\textbf{Parametr}                                   & \textbf{Wartość} \\ \midrule
+		Liczba mrówek (\texttt{ant\_count})                 & 50               \\
+		Liczba iteracji (\texttt{iteration\_count})         & 800              \\
+		Wpływ feromonu ($\alpha$)                           & 1,0              \\
+		Wpływ odległości ($\beta$)                          & 1,0              \\
+		Współczynnik parowania (\texttt{rho})               & 0,3              \\
+		Wartość Q (\texttt{Q})                              & 50               \\
+		Rozmiar listy kandydatów (\texttt{candidate\_list}) & 10               \\
+		Czynnik elity (\texttt{elite\_factor})              & 2                \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\section{Badanie wpływu pojedynczych hiperparametrów}
+
+Badanie przeprowadzono metodą \textit{one-factor-at-a-time}, zmieniając pojedynczy hiperparametr przy stałych pozostałych wartościach. Dla algorytmów stochastycznych każdą konfigurację uruchamiano 10-krotnie na tym samym grafie testowym (50 wierzchołków, $n=10$), a następnie uśredniano wynik funkcji celu. Dla A* (deterministyczny, kosztowny obliczeniowo) zastosowano pojedyncze uruchomienie na mniejszym grafie (20 wierzchołków), aby zachować rozsądny czas wykonywania.
+
+\subsection{SA - Symulowane wyżarzanie}
+
+Największy wpływ na jakość ma \texttt{n\_iter}, a wartość optymalna z poprzedniego strojenia (5000) stanowi dobry kompromis: obniżanie poniżej 2000 wyraźnie pogarsza wynik, natomiast zwiększanie powyżej 5000 daje już tylko niewielkie zyski przy dużym wzroście czasu. Temperatura początkowa ma maksimum w pobliżu wartości optymalnej (\texttt{start\_temp}=10), zarówno niższe (1--5), jak i wyższe (50+) wartości obniżają średni wynik. Współczynnik chłodzenia jest mało wrażliwy: w okolicy wartości optymalnej \texttt{decrease\_factor}=0.995 różnice jakości są minimalne, natomiast większe wartości nie poprawiają wyniku, a zwiększają czas.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/sa_tune_n_iter_detailed.png}
+	\caption{SA: wpływ liczby iteracji.}
+	\label{fig:sa_tune_n_iter}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/sa_tune_start_temp_detailed.png}
+	\caption{SA: wpływ temperatury początkowej.}
+	\label{fig:sa_tune_start_temp}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/sa_tune_decrease_factor_detailed.png}
+	\caption{SA: wpływ współczynnika chłodzenia.}
+	\label{fig:sa_tune_decrease_factor}
+\end{figure}
+
+\subsection{GA - Algorytm genetyczny}
+
+Najsilniej wpływa \texttt{pop\_size}, wartość optymalna 500 jest sensownym punktem pracy, bo zmniejszanie populacji (200 i mniej) zauważalnie pogarsza wynik, a zwiększanie powyżej 500 przynosi tylko marginalne zyski przy dużym koszcie czasowym. Liczba generacji zachowuje się podobnie: obniżenie poniżej 500 redukuje jakość, natomiast zwiększanie powyżej 500 nie poprawia wyniku i tylko wydłuża czas. Współczynnik mutacji jest najbardziej stabilny w pobliżu wartości optymalnej 0.1, zbyt małe wartości (0.05 i niżej) obniżają eksplorację, a większe (0.2--0.3) dają podobny poziom, bez istotnej przewagi nad ustawieniem optymalnym.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/ga_tune_pop_size_detailed.png}
+	\caption{GA: wpływ wielkości populacji.}
+	\label{fig:ga_tune_pop_size}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/ga_tune_generations_detailed.png}
+	\caption{GA: wpływ liczby generacji.}
+	\label{fig:ga_tune_generations}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/ga_tune_mutation_rate_detailed.png}
+	\caption{GA: wpływ współczynnika mutacji.}
+	\label{fig:ga_tune_mutation_rate}
+\end{figure}
+
+\subsection{ACO - Algorytm mrówkowy}
+
+Najbardziej wrażliwy jest \texttt{ant\_count}: względem wartości optymalnej 50, obniżanie liczby mrówek wyraźnie pogarsza wynik, a zwiększanie powyżej 50 nie poprawia jakości, tylko wydłuża czas. Dla \texttt{alpha} maksimum wypada przy wartości optymalnej 1.0, obniżenie do 0.5 daje zbliżony wynik, ale bardzo małe wartości (0.01) oraz zwiększanie powyżej 1 stopniowo pogarsza jakość. Analogicznie \texttt{beta} jest najkorzystniejsze blisko 1.0: zmniejszenie do 0.5 daje lekki spadek, a zbyt niskie (0.01) lub wyższe (2--10) wartości obniżają wynik. Dla \texttt{rho} (optymalnie 0.3) obniżanie do 0.05--0.1 nie zmienia wyniku, ale większe wartości (0.5+) lekko go pogarszają. \texttt{Q} pozostaje praktycznie obojętne w badanym zakresie. Dla \texttt{candidate\_list} najlepszy kompromis daje wartość optymalna 10: mniejsze listy nieco obniżają wynik, a większe zwiększają koszt bez poprawy jakości. \texttt{elite\_factor} jest stabilny w okolicy 2, a większe wartości wnoszą niewielki spadek jakości. Tryb diffused nie poprawia wyniku względem standardowego, a jedynie zwiększa czas, większy \texttt{diffusion\_range} dodatkowo obniża jakość.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/aco_tune_ant_count_detailed.png}
+	\caption{ACO: wpływ liczby mrówek.}
+	\label{fig:aco_tune_ant_count}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/aco_tune_alpha_detailed.png}
+	\caption{ACO: wpływ parametru $\alpha$.}
+	\label{fig:aco_tune_alpha}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/aco_tune_beta_detailed.png}
+	\caption{ACO: wpływ parametru $\beta$.}
+	\label{fig:aco_tune_beta}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/aco_tune_degradation_detailed.png}
+	\caption{ACO: wpływ współczynnika parowania.}
+	\label{fig:aco_tune_degradation}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/aco_tune_q_value_detailed.png}
+	\caption{ACO: wpływ wartości Q.}
+	\label{fig:aco_tune_q_value}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/aco_tune_candidates_list_size_detailed.png}
+	\caption{ACO: wpływ rozmiaru listy kandydatów.}
+	\label{fig:aco_tune_candidates_list_size}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/aco_tune_elite_detailed.png}
+	\caption{ACO: wpływ czynnika elity.}
+	\label{fig:aco_tune_elite}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/aco_diffused_tune_range_detailed.png}
+	\caption{ACO diffused: wpływ zasięgu dyfuzji.}
+	\label{fig:aco_diffused_tune_range}
+\end{figure}
+
+\subsection{A*}
+
+Badanie dotyczyło liczby dzieci generowanych w kroku oraz trybu \texttt{ALL} vs \texttt{N\_BEST}. Względem wartości optymalnej \texttt{n\_children}=5 obniżenie do 3 pogarsza wynik, a skrajne zmniejszenie do 1 prowadzi do bardzo słabego rozwiązania. Zwiększanie powyżej 5 (10--15) nie poprawia jakości, ale znacząco wydłuża czas. Pełne przeszukiwanie \texttt{ALL} daje ten sam wynik co \texttt{N\_BEST}, lecz kosztuje wielokrotnie więcej.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{tuning/astar_tune_n_children_detailed.png}
+	\caption{A*: wpływ liczby dzieci.}
+	\label{fig:astar_tune_n_children}
+\end{figure}
+
+\begin{table}[H]
+	\centering
+	\caption{A*: porównanie trybu generowania dzieci.}
+	\label{tab:astar_tune_factory}
+	\begin{tabular}{lrrrrrr}
+		\toprule
+		\textbf{\texttt{childrenFactory}} & \textbf{Średni} & \textbf{Mediana} & \textbf{Najlepszy} & \textbf{Najgorszy} & \textbf{Std} & \textbf{Czas} \\ \midrule
+		N\_BEST                           & 7,47            & 7,47             & 7,47               & 7,47               & 0,00         & 13,34         \\
+		ALL                               & 7,47            & 7,47             & 7,47               & 7,47               & 0,00         & 44,94         \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+
+\section{Porównanie algorytmów}
+
+Algorytmy zostały porównane na tym samym grafie. Niedeterministyczne zostały uruchomione 30 razy, aby uzyskać wynik istotny statystycznie.
+W większości scenariuszy A* został pominięty ze względu na zbyt długi czas wykonania względem pozostałych heurystyk (powyżej godziny).
+
+\subsection{Grafy Barabásiego-Alberta}
+
+Grafy generowano iteracyjnie: każdy nowy wierzchołek wybierał rodzica z prawdopodobieństwem malejącym wraz z wiekiem węzłów, a następnie był umieszczany w stałej odległości od niego w losowym kierunku 3D. Koszty krawędzi wyznaczano na podstawie odległości euklidesowej przeskalowanej współczynnikiem kosztu, co tworzy strukturę z hubami i zróżnicowanymi odległościami. W wariancie standardowym długość ścieżki była stała i wynosiła 20, natomiast w wariancie extended długość ścieżki była równa połowie liczby węzłów grafu.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_20_nodes.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (20 węzłów).}
+	\label{fig:compare_barabasi_20}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_40_nodes.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (40 węzłów).}
+	\label{fig:compare_barabasi_40}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_60_nodes.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (60 węzłów).}
+	\label{fig:compare_barabasi_60}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_80_nodes.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (80 węzłów).}
+	\label{fig:compare_barabasi_80}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_100_nodes.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (100 węzłów).}
+	\label{fig:compare_barabasi_100}
+\end{figure}
+
+W wariancie standardowym (stała długość ścieżki 20) ACO najczęściej uzyskuje najwyższe wyniki i utrzymuje stabilność wraz ze wzrostem liczby węzłów. GA pozostaje blisko jakościowo, ale wyraźnie traci czasowo, co czyni go mniej praktycznym dla dużych grafów. Wraz ze wzrostem rozmiaru grafu wszystkie algorytmy coraz częściej pozostają w lokalnym sąsiedztwie hubów zamiast eksplorować dalsze regiony, co osłabia jakość rozwiązań.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_20_nodes_extended_path.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (20 węzłów, dłuższa ścieżka).}
+	\label{fig:compare_barabasi_20_long}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_40_nodes_extended_path.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (40 węzłów, dłuższa ścieżka).}
+	\label{fig:compare_barabasi_40_long}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_60_nodes_extended_path.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (60 węzłów, dłuższa ścieżka).}
+	\label{fig:compare_barabasi_60_long}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_80_nodes_extended_path.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (80 węzłów, dłuższa ścieżka).}
+	\label{fig:compare_barabasi_80_long}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_barabasi_100_nodes_extended_path.png}
+	\caption{Porównanie algorytmów dla grafu Barabásiego-Alberta (100 węzłów, dłuższa ścieżka).}
+	\label{fig:compare_barabasi_100_long}
+\end{figure}
+
+W wariancie extended (długość ścieżki równa połowie liczby węzłów) różnice się pogłębiają: ACO utrzymuje przewagę i potrafi wydłużać trasę bez drastycznej utraty jakości, podczas gdy GA i SA notują wyraźny spadek wyników. Dłuższa ścieżka zwiększa koszt eksploracji, przez co algorytmy częściej pozostają blisko centrum grafu i rzadziej sięgają po odległe, bardziej opłacalne węzły.
+
+\subsection{Podstawowy graf (50 węzłów, ścieżka 10)}
+
+Wierzchołki są rozmieszczone losowo w trójwymiarowym sześcianie.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_base_graph.png}
+	\caption{Porównanie algorytmów na podstawowym grafie.}
+	\label{fig:compare_base_graph}
+\end{figure}
+
+Na bazowym grafie ACO osiąga najwyższy średni wynik, a GA jest niewiele gorszy kosztem dłuższego czasu. SA wypada zauważalnie gorzej od metod populacyjnych i nie poprawia wyniku greedy. Random jest najsłabszym baseline.
+
+\subsection{Podstawowy graf (25 węzłów, ścieżka 10)}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_base_graph_25_nodes.png}
+	\caption{Porównanie algorytmów dla grafu 25 węzłów.}
+	\label{fig:compare_base_graph_25}
+\end{figure}
+
+Przy mniejszym grafie ACO utrzymuje najlepszy wynik, GA jest minimalnie słabszy, a SA wyraźnie odstaje od czołówki. A* daje porównywalny wynik do ACO, ale czas wykonania jest rzędy wielkości większy, co potwierdza brak praktyczności tej metody w porównaniu.
+
+\subsection{Podstawowy graf (50 węzłów, ścieżka 40)}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_base_graph_long_path.png}
+	\caption{Porównanie algorytmów dla długiej ścieżki.}
+	\label{fig:compare_base_graph_long}
+\end{figure}
+
+Dłuższa ścieżka faworyzuje ACO, które wyraźnie przewyższa GA i SA. GA notuje spadek jakości i wzrost czasu, co sugeruje trudność w utrzymaniu jakości przy długim horyzoncie. Greedy utrzymuje umiarkowany wynik, ale wyraźnie odstaje od najlepszych metod.
+
+\subsection{Scenariusz archipelagów}
+
+Wierzchołki grafu podzielone są w oddalone od siebie grupy. W obrębie jednej grupy wierzchołki są położone blisko siebie.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{visualizations/archipelago_aco.jpg}
+	\caption{Scenariusz archipelagów: przykładowe rozwiązanie ACO.}
+	\label{fig:archipelago_visualization}
+\end{figure}
+
+Optymalne rozwiązanie powinno odwiedzić minimalną liczbę wysp, zaliczając przy tym większość wierzchołków na nich. Scenariusz ma na celu wykryć ewentualne tendencje algorytmów do wykonywania zbędnych kosztownych skoków.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_archipelago_scenario.png}
+	\caption{Porównanie algorytmów w scenariuszu archipelagów.}
+	\label{fig:compare_archipelago}
+\end{figure}
+
+Wyniki pokazują wyraźną przewagę metod populacyjnych: GA i ACO osiągają najlepsze wyniki, a SA jest tylko nieznacznie słabsze. Zachłanny algorytm radzi sobie umiarkowanie dobrze dzięki lokalnym klastrom, ale wyraźnie przegrywa z metodami globalnymi. Random pozostaje najgorszym.
+
+\subsection{Scenariusz wąskiego gardła}
+
+Graf jest podzielony na dwie grupy - wierzchołki blisko początkowego mają standardowe nagrody, wierzchołki w grupie oddalonej mają zwiększone nagrody. Pomiędzy nimi umieszczony jest wierzchołek będący mostem, aby pomóc algorytmom w przejściu w jedną stronę.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{visualizations/bottleneck_aco.jpg}
+	\caption{Scenariusz wąskiego gardła: przykładowe rozwiązanie ACO.}
+	\label{fig:bottleneck_visualization}
+\end{figure}
+
+W optymalnym rozwiązaniu większość odwiedzonych wierzchołków powinno być z grupy oddalonej o wyższych nagrodach. Scenariusz ma na celu sprawdzić zdolność algorytmów do podejmowania trudnych decyzji - chwilowe pogorszenie ścieżki dla całościowego zysku.
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_bottleneck_scenario.png}
+	\caption{Porównanie algorytmów w scenariuszu wąskiego gardła.}
+	\label{fig:compare_bottleneck}
+\end{figure}
+
+GA osiąga najlepszy wynik, ale jest najwolniejszy; ACO i SA są bardzo blisko, oferując lepszy kompromis czasowy. Zachłanny algorytm zdecydowanie gorzej radzi sobie z koniecznością kosztownego skoku do nagrodzonej strefy.
+
+\subsection{Scenariusz linii i okręgu}
+
+Graf jest podzielony na dwie struktury - wierzchołki blisko początkowego ustawione są w linii i mają standardowe nagrody, pozostałe wierzchołki są oddalone i ustawione w okrąg wokół linii, mają one zwiększone nagrody.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{visualizations/line_circle_aco.jpg}
+	\caption{Scenariusz linii i okręgu: przykładowe rozwiązanie ACO.}
+	\label{fig:line_circle_visualization}
+\end{figure}
+
+W optymalnym rozwiązaniu algorytm powinien przeskoczyć na zewnętrzny okrąg, odwiedzić jego wierzchołki sekwencyjnie i powrócić do początku. Scenariusz ma na celu sprawdzić zdolność algorytmów do podejmowania trudnych decyzji - chwilowe pogorszenie ścieżki dla całościowego zysku.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_line_circle_scenario.png}
+	\caption{Porównanie algorytmów w scenariuszu linii i okręgu.}
+	\label{fig:compare_line_circle}
+\end{figure}
+
+ACO uzyskuje najlepszy wynik i zachowuje stabilność, co sugeruje skuteczne przejście na zewnętrzny okrąg. GA i greedy są zbliżone, natomiast SA wypada najsłabiej, co wskazuje na problemy z utrzymaniem długiej sekwencji na obrzeżu.
+
+\subsection{Scenariusz pieśni syreny}
+
+Prawie wszystkie wierzchołki grafu są umieszczone wokół stacji macierzystej. Wyróżnia się jeden, znacznie oddalony o bardzo zwiększonej nagrodzie - przysłowiowa syrena.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{visualizations/siren_song_genetic.jpg}
+	\caption{Scenariusz pieśni syreny: przykładowe rozwiązanie GA.}
+	\label{fig:siren_song_visualization}
+\end{figure}
+
+W optymalnym rozwiązaniu algorytm powinien odwiedzić "syrenę". Scenariusz ma na celu sprawdzić zdolność algorytmów do podejmowania trudnych decyzji - chwilowe pogorszenie ścieżki dla całościowego zysku.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_siren_song_scenario.png}
+	\caption{Porównanie algorytmów w scenariuszu pieśni syreny.}
+	\label{fig:compare_siren_song}
+\end{figure}
+
+Wszystkie algorytmy poza losowym uzyskały bardzo zbliżone wyniki. Wskazuje to na względną łatwość wykrycia "syreny" w tym scenariuszu, nawet przy kosztownym skoku.
+
+\subsection{Scenariusz gradientu}
+
+Nagroda przypisana do wierzchołków rośnie proporcjonalnie do odległości od stacji domowej. Wierzchołki ustawione są w przestrzennym sześcianie.
+
+W optymalnym rozwiązaniu algorytm powinien stopniowo oddalać się od stacji początkowej, odwiedzać wierzchołki najbardziej oddalone, a następnie stopniowo do niej wrócić.
+Scenariusz ma na celu sprawdzić zdolność algorytmów do długoterminowego planowania ścieżki.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_gradient_scenario.png}
+	\caption{Porównanie algorytmów w scenariuszu gradientu.}
+	\label{fig:compare_gradient}
+\end{figure}
+
+ACO osiąga najlepsze wyniki, a GA jest blisko za nim; oba algorytmy skutecznie eksplorują odległe, lepiej nagrodzone rejony. SA poprawia wynik względem greedy, ale nie dorównuje metodom populacyjnym. Losowy baseline jest wyraźnie najsłabszy.
+
+\subsection{Scenariusz mgławicy}
+
+Wierzchołki ustawione są w przestrzennym sześcianie. Zdefiniowane zostały obszary "burzy", wśród których koszt przemieszczania się pomiędzy stacjami jest znacznie zwiększony.
+
+W optymalnym rozwiązaniu algorytm powinien omijać obszary o zwiększonym koszcie. Scenariusz ma na celu sprawdzić zdolność algorytmów do długoterminowego planowania ścieżki.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.9\textwidth]{compare/compare_on_nebula_scenario.png}
+	\caption{Porównanie algorytmów w scenariuszu mgławicy.}
+	\label{fig:compare_nebula}
+\end{figure}
+
+A* osiąga najlepszy wynik, ale kosztem bardzo długiego czasu obliczeń (około 11 minut), co czyni go mało praktycznym dla większych instancji. Wśród heurystyk najlepszy jest ACO, a GA jest niewiele słabszy, lecz wolniejszy. SA poprawia wynik względem greedy, ale pozostaje poniżej metod populacyjnych.
+
+\section{Wnioski}
+
+Przeprowadzone badania wykazały, że algorytmy populacyjne, takie jak \textbf{algorytm mrówkowy} i \textbf{algorytm genetyczny}, są najbardziej efektywne w rozwiązywaniu problemu planowania ścieżki w grafie z uwzględnieniem nagród i kosztów.
+Oba te podejścia wykazały zdolność do skutecznego eksplorowania przestrzeni rozwiązań oraz adaptacji do różnych scenariuszy problemowych.
+Pod pewnymi względami wyróżnia się jednak \textbf{ACO}, które:
+\begin{itemize}
+	\item Regularnie osiągało najlepsze wyniki w większości testowanych scenariuszy.
+	\item Wykazywało stabilność wyników, co sugeruje skuteczne wykorzystanie informacji o feromonach do kierowania poszukiwaniami.
+	\item W porównaniu z algorytmem genetycznym oferowało znacznie lepszy czas wykonania przy zbliżonej jakości rozwiązań.
+	\item Wyróżniło się przede wszystkim przy dłuższych ścieżkach, co powoduje że jest zdecydowanie lepszym wyborem w praktycznych zastosowaniach wymagających planowania na większą skalę.
+\end{itemize}
+
+Warto zauważyć, że algorytm zachłanny bywał konkurencyjny na prostszych instancjach, lecz brak zdolności do globalnej eksploracji ogranicza jego skuteczność w bardziej złożonych scenariuszach. Symulowane wyżarzanie stanowiło stabilną poprawę względem podejść prostych, ale zwykle ustępowało metodom populacyjnym. Algorytm A* dostarczał bardzo wysokiej jakości rozwiązań w małych instancjach, jednak jego koszt obliczeń szybko rósł, co uniemożliwiało praktyczne wykorzystanie w większych eksperymentach.
+
+\end{document}
