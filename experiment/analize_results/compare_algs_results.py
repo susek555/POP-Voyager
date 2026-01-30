@@ -108,39 +108,59 @@ def plot_metaheuristic_vs_astar(filepath: str, title: str) -> None:
 
 
 if __name__ == "__main__":
+    # plot_scenario_results(
+    #     "experiment/results/compare_on_base_graph_25_nodes.jsonl",
+    #     "Podstawowy Graf - 25 Węzłów",
+    # )
+    # plot_scenario_results(
+    #     "experiment/results/compare_on_base_graph_long_path.jsonl",
+    #     "Podstawowy Graf - Długa Ścieżka",
+    # )
+    # plot_scenario_results(
+    #     "experiment/results/compare_on_base_graph.jsonl",
+    #     "Podstawowy Graf",
+    # )
+    # plot_scenario_results(
+    #     "experiment/results/compare_on_archipelago_scenario.jsonl",
+    #     "Scenariusz Archipelagu",
+    # )
+    # plot_scenario_results(
+    #     "experiment/results/compare_on_line_circle_scenario.jsonl",
+    #     "Scenariusz Linia i Koło",
+    # )
+    # plot_scenario_results(
+    #     "experiment/results/compare_on_nebula_scenario.jsonl",
+    #     "Scenariusz Mgławicy",
+    # )
+    # plot_scenario_results(
+    #     "experiment/results/compare_on_siren_song_scenario.jsonl",
+    #     "Scenariusz Pieśni Syreny",
+    # )
+    # plot_scenario_results(
+    #     "experiment/results/compare_on_gradient_scenario.jsonl",
+    #     "Scenariusz Gradientu",
+    # )
+    # plot_scenario_results(
+    #     "experiment/results/compare_on_bottleneck_scenario.jsonl",
+    #     "Scenariusz Wąskiego Gardła",
+    # )
     plot_scenario_results(
-        "experiment/results/compare_on_base_graph_25_nodes.jsonl",
-        "Podstawowy Graf - 25 Węzłów",
+        "experiment/results/compare_on_barabasi_20_nodes.jsonl",
+        "Graf typu Barabási - (20 węzłów)",
     )
     plot_scenario_results(
-        "experiment/results/compare_on_base_graph_long_path.jsonl",
-        "Podstawowy Graf - Długa Ścieżka",
+        "experiment/results/compare_on_barabasi_40_nodes.jsonl",
+        "Graf typu Barabási - (40 węzłów)",
     )
     plot_scenario_results(
-        "experiment/results/compare_on_base_graph.jsonl",
-        "Podstawowy Graf",
+        "experiment/results/compare_on_barabasi_60_nodes.jsonl",
+        "Graf typu Barabási - (60 węzłów)",
     )
     plot_scenario_results(
-        "experiment/results/compare_on_archipelago_scenario.jsonl",
-        "Scenariusz Archipelagu",
+        "experiment/results/compare_on_barabasi_80_nodes.jsonl",
+        "Graf typu Barabási - (80 węzłów)",
     )
     plot_scenario_results(
-        "experiment/results/compare_on_line_circle_scenario.jsonl",
-        "Scenariusz Linia i Koło",
-    )
-    plot_scenario_results(
-        "experiment/results/compare_on_nebula_scenario.jsonl",
-        "Scenariusz Mgławicy",
-    )
-    plot_scenario_results(
-        "experiment/results/compare_on_siren_song_scenario.jsonl",
-        "Scenariusz Pieśni Syreny",
-    )
-    plot_scenario_results(
-        "experiment/results/compare_on_gradient_scenario.jsonl",
-        "Scenariusz Gradientu",
-    )
-    plot_scenario_results(
-        "experiment/results/compare_on_bottleneck_scenario.jsonl",
-        "Scenariusz Wąskiego Gardła",
+        "experiment/results/compare_on_barabasi_100_nodes.jsonl",
+        "Graf typu Barabási - (100 węzłów)",
     )
